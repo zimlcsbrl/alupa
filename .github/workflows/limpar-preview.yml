@@ -1,0 +1,16 @@
+name: Remover banco de preview
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  remover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apagar branch do Neon do PR
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+        run: |
+          npx --yes neonctl branches delete "preview/pr-${{ github.event.number }}" \
+            --project-id "${{ vars.NEON_PROJECT_ID }}" || echo "Branch já removida."

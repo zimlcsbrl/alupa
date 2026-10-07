@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+  # Banco de preview: uma branch do Neon por PR, criada a partir de "main".
+  # Requer o secret NEON_API_KEY e a variável NEON_PROJECT_ID no repositório.
+  banco-preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+      NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+      BRANCH: preview/pr-${{ github.event.number }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Criar branch do Neon (se não existir)
+        run: |
+          npx --yes neonctl branches get "$BRANCH" --project-id "$NEON_PROJECT_ID" >/dev/null 2>&1 \
+            || npx --yes neonctl branches create --name "$BRANCH" --parent main --project-id "$NEON_PROJECT_ID"
+      - name: Obter URLs de conexão
+        run: |
+          echo "DATABASE_URL_UNPOOLED=$(npx --yes neonctl connection-string "$BRANCH" --project-id "$NEON_PROJECT_ID" --database-name alupa --role-name alupa_migrator)" >> "$GITHUB_ENV"
+          echo "DATABASE_URL=$(npx --yes neonctl connection-string "$BRANCH" --project-id "$NEON_PROJECT_ID" --database-name alupa --role-name alupa_app --pooled)" >> "$GITHUB_ENV"
+      - run: pnpm db:migrate
+      - run: pnpm db:seed
+      - run: pnpm test

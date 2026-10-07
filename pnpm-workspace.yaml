@@ -1,0 +1,10 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# Scripts de instalação de dependências precisam de autorização explícita.
+allowBuilds:
+  esbuild: true
+  msgpackr-extract: false
+  sharp: false
+  unrs-resolver: false
