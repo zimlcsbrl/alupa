@@ -24,46 +24,72 @@ export interface RespostaBruta {
 export interface OpcoesHttp {
   tentativas?: number;
   timeoutMs?: number;
+  /** Tentativas extras quando a fonte limita a taxa (HTTP 429). */
+  tentativasLimite?: number;
+}
+
+/** Espera pedida pela fonte em Retry-After (segundos ou data HTTP), em milissegundos. */
+function esperaPedida(valor: string | null): number | null {
+  if (!valor) return null;
+  const segundos = Number(valor);
+  if (Number.isFinite(segundos)) return segundos * 1000;
+  const data = Date.parse(valor);
+  return Number.isNaN(data) ? null : Math.max(0, data - Date.now());
 }
 
 const espera = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
- * GET com novas tentativas (backoff exponencial) para falhas de rede, 5xx e 429.
+ * GET com novas tentativas para falhas de rede e 5xx (backoff curto) e para limite de taxa,
+ * HTTP 429 (espera o Retry-After ou 10 s, 20 s, 40 s, até 60 s).
  * Devolve o corpo bruto, para que o original possa ser guardado e ter seu hash calculado.
  */
 export async function buscar(
   url: string,
-  { tentativas = 4, timeoutMs = 60_000 }: OpcoesHttp = {},
+  { tentativas = 4, timeoutMs = 60_000, tentativasLimite = 6 }: OpcoesHttp = {},
 ): Promise<RespostaBruta> {
-  let ultimoErro: unknown;
+  let falhas = 0;
+  let limitadas = 0;
 
-  for (let tentativa = 1; tentativa <= tentativas; tentativa++) {
+  for (;;) {
+    let erro: unknown;
+    let aguardar = 0;
     try {
       const resposta = await fetch(url, {
         headers: { accept: 'application/json', 'user-agent': 'A Lupa (https://alupa.app)' },
         signal: AbortSignal.timeout(timeoutMs),
       });
-      if (resposta.status >= 500 || resposta.status === 429) {
+      if (resposta.status === 429) {
+        limitadas++;
+        erro = new ErroFonte('HTTP 429 (limite de requisições)', url, 429);
+        aguardar =
+          esperaPedida(resposta.headers.get('retry-after')) ??
+          Math.min(60_000, 10_000 * 2 ** (limitadas - 1));
+        if (limitadas > tentativasLimite) throw erro;
+      } else if (resposta.status >= 500) {
         throw new ErroFonte(`HTTP ${resposta.status}`, url, resposta.status);
-      }
-      if (!resposta.ok) {
+      } else if (!resposta.ok) {
         throw new ErroFonte(`HTTP ${resposta.status}`, url, resposta.status, true);
+      } else {
+        return {
+          url,
+          status: resposta.status,
+          texto: resposta.status === 204 ? '' : await resposta.text(),
+          contentType: resposta.headers.get('content-type'),
+        };
       }
-      return {
-        url,
-        status: resposta.status,
-        texto: resposta.status === 204 ? '' : await resposta.text(),
-        contentType: resposta.headers.get('content-type'),
-      };
-    } catch (erro) {
-      ultimoErro = erro;
-      if ((erro instanceof ErroFonte && erro.definitivo) || tentativa === tentativas) break;
-      await espera(500 * 2 ** (tentativa - 1));
+    } catch (e) {
+      if (
+        (e instanceof ErroFonte && (e.definitivo || e.status === 429)) ||
+        ++falhas >= tentativas
+      ) {
+        throw e;
+      }
+      erro = e;
+      aguardar = 500 * 2 ** (falhas - 1);
     }
+    if (erro) await espera(aguardar);
   }
-
-  throw ultimoErro;
 }
 
 /**

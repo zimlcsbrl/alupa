@@ -17,7 +17,14 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   outputFileTracingRoot: path.join(import.meta.dirname, '../../'),
   // Pacotes do monorepo publicados como TypeScript, sem build próprio.
-  transpilePackages: ['@alupa/domain'],
+  transpilePackages: ['@alupa/domain', '@alupa/db'],
+  images: {
+    // Fotos oficiais dos parlamentares, servidas pelas próprias Casas.
+    remotePatterns: [
+      { protocol: 'https', hostname: 'www.camara.leg.br', pathname: '/internet/deputado/**' },
+      { protocol: 'https', hostname: 'www.senado.leg.br', pathname: '/senadores/img/**' },
+    ],
+  },
   poweredByHeader: false,
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];

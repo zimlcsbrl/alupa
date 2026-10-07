@@ -7,6 +7,7 @@
     "dev": "tsx watch --env-file-if-exists=../../.env src/index.ts",
     "start": "tsx --env-file-if-exists=../../.env src/index.ts",
     "pncp:contratacoes": "tsx --env-file-if-exists=../../.env src/cli/pncp-contratacoes.ts",
+    "parlamentares": "tsx --env-file-if-exists=../../.env src/cli/parlamentares.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },

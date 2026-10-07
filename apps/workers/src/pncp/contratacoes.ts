@@ -23,7 +23,7 @@ type Poder = (typeof schema.poder.enumValues)[number];
 const PODERES: Record<string, Poder> = { E: 'executivo', L: 'legislativo', J: 'judiciario' };
 
 /** Intervalo entre requisições, para não sobrecarregar a API pública. */
-const PAUSA_MS = 150;
+const PAUSA_MS = 500;
 const pausa = () => new Promise((r) => setTimeout(r, PAUSA_MS));
 
 interface Referencias {

@@ -920,6 +920,280 @@ h3 {
   padding-block: 12px;
   border-bottom: 1px solid var(--line);
 }
+/* ---------- Páginas de registros (órgãos, políticos, contratações) ---------- */
+.records-page {
+  width: min(100% - 80px, 1160px);
+  margin-inline: auto;
+  padding-bottom: 72px;
+}
+.records-page .stat-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 28px;
+}
+.records-page .data-section h2 {
+  font-size: 26px;
+  margin-bottom: 16px;
+}
+.record-title {
+  font-size: clamp(26px, 3.4vw, 38px);
+  line-height: 1.25;
+}
+.draft-notice {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  padding: 14px 18px;
+  border: 1px solid #ecd78f;
+  border-radius: 8px;
+  background: #faf3da;
+  font-size: 14px;
+}
+.draft-notice .tag {
+  background: #f3e4b1;
+}
+.draft-notice p {
+  margin: 0;
+}
+.filter-bar {
+  margin: 28px 0 8px;
+}
+.filter-bar label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.filter-bar > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.filter-bar input,
+.filter-bar select {
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid #b9c1b4;
+  border-radius: 5px;
+  background: #fff;
+  color: var(--foreground);
+  font-size: 16px;
+}
+.filter-bar input {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+.filter-bar .button {
+  min-height: 48px;
+  border: 0;
+  cursor: pointer;
+}
+.record-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  border-top: 1px solid var(--line);
+}
+.record-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--line);
+}
+.record-list li > a,
+.record-list li > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  text-decoration: none;
+  color: var(--foreground);
+}
+.record-list li > a strong {
+  color: var(--green);
+  overflow-wrap: anywhere;
+}
+.record-list li > a:hover strong {
+  text-decoration: underline;
+}
+.record-list li span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.record-list dl {
+  display: flex;
+  gap: 28px;
+  margin: 0;
+  flex-shrink: 0;
+  text-align: right;
+}
+.record-list dt {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.record-list dd {
+  margin: 0;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.empty-state {
+  padding: 32px 0;
+  color: var(--muted);
+}
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-top: 16px;
+}
+.pagination a {
+  padding: 10px 0;
+}
+.person-grid {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.person-grid a {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  text-decoration: none;
+  color: var(--foreground);
+  height: 100%;
+}
+.person-grid a:hover {
+  border-color: var(--green);
+}
+.person-grid img,
+.photo-placeholder {
+  width: 48px;
+  height: 63px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #e9ede3;
+  flex-shrink: 0;
+}
+.person-grid a > span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.person-grid strong {
+  color: var(--green);
+}
+.person-grid a > span > span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.person-heading {
+  display: flex;
+  gap: 28px;
+  align-items: flex-end;
+}
+.person-heading img {
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: grid;
+  gap: 12px;
+}
+.contact-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.contact-list .eyebrow {
+  flex-basis: 100%;
+  margin: 0;
+}
+.contact-list a {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.copy-button {
+  min-height: 36px;
+  padding: 4px 14px;
+  border: 1px solid var(--green);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--green);
+  font-size: 13px;
+  cursor: pointer;
+}
+.record-details {
+  margin-top: 28px;
+}
+.record-details dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 32px;
+  margin: 0;
+}
+.record-details dt {
+  font-size: 12px;
+  color: var(--muted);
+}
+.record-details dd {
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+}
+.record-details h2 {
+  font-size: 20px;
+  margin-top: 28px;
+}
+.source-line {
+  margin-top: 20px;
+  font-size: 14px;
+}
+@media (max-width: 760px) {
+  .records-page {
+    width: calc(100% - 40px);
+  }
+  .records-page .stat-grid,
+  .record-details dl {
+    grid-template-columns: 1fr;
+  }
+  .record-list li {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .record-list dl {
+    text-align: left;
+  }
+  .person-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .draft-notice {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
 @media (max-width: 1000px) {
   .home-hero {
     gap: 32px;

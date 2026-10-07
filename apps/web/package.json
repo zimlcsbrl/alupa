@@ -10,7 +10,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@alupa/db": "workspace:*",
     "@alupa/domain": "workspace:*",
+    "drizzle-orm": "^0.44",
+    "server-only": "^0.0.1",
     "next": "16.3.8",
     "react": "19.2.8",
     "react-dom": "19.2.8"
