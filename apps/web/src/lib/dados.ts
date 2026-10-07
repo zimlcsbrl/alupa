@@ -7,8 +7,10 @@ import { db } from './db';
 const {
   bemDeclarado,
   candidatura,
+  coleta,
   contatoPublico,
   contratacao,
+  contrato,
   enteFederativo,
   mandato,
   materiaImprensa,
@@ -271,11 +273,40 @@ export async function buscarPolitico(slug: string) {
     )
     .orderBy(desc(participacaoSocietaria.entradaEm));
 
+  // Contratos públicos (PNCP) das empresas ligadas, e o período já coberto pela coleta.
+  const idsEmpresas = participacoes
+    .map((x) => (x.empresa?.cnpj ? x.empresa : null))
+    .filter(Boolean)
+    .map((e) => e!.cnpj!);
+  const contratos = idsEmpresas.length
+    ? await db()
+        .select({
+          id: contrato.id,
+          fornecedorCnpj: contrato.fornecedorCnpj,
+          numeroControlePncp: contrato.numeroControlePncp,
+          ano: contrato.ano,
+          sequencial: contrato.sequencial,
+          orgaoNome: contrato.orgaoNome,
+          siglaUf: contrato.siglaUf,
+          objeto: contrato.objeto,
+          valorGlobal: contrato.valorGlobal,
+          assinadoEm: contrato.assinadoEm,
+          emendaParlamentar: contrato.emendaParlamentar,
+        })
+        .from(contrato)
+        .where(inArray(contrato.fornecedorCnpj, idsEmpresas))
+        .orderBy(desc(contrato.assinadoEm))
+    : [];
+
   return {
     ...p,
     mandatos,
     contatos,
-    participacoes,
+    participacoes: participacoes.map((x) => ({
+      ...x,
+      contratos: contratos.filter((c) => c.fornecedorCnpj === x.empresa?.cnpj),
+    })),
+    coberturaContratos: await coberturaContratos(),
     candidaturas: candidaturas.map((c) => ({
       ...c,
       bens: bens.filter((b) => b.candidaturaId === c.id),
@@ -402,4 +433,121 @@ export async function listarCandidaturas({
     .offset((pagina - 1) * POR_PAGINA);
 
   return { candidaturas: linhas.slice(0, POR_PAGINA), haMais: linhas.length > POR_PAGINA };
+}
+
+/** Período (dias de publicação no PNCP) já percorrido pela coleta seletiva de contratos. */
+export async function coberturaContratos() {
+  const [r] = await db()
+    .select({
+      de: sql<string | null>`min(${coleta.parametros}->>'dia')`,
+      ate: sql<string | null>`max(${coleta.parametros}->>'dia')`,
+      dias: sql<number>`count(distinct ${coleta.parametros}->>'dia')`.mapWith(Number),
+    })
+    .from(coleta)
+    .where(and(eq(coleta.tarefa, 'pncp:contratos:publicacao'), eq(coleta.situacao, 'concluida')));
+  return r?.de && r.ate ? { de: r.de, ate: r.ate, dias: r.dias } : null;
+}
+
+// ---------- Painel: empresas ligadas a políticos com contratos públicos ----------
+
+/**
+ * Ligações pessoa → empresa → contrato, do quadro de sócios mais recente.
+ * `anteriorAEntrada` marca contratos assinados antes de a pessoa entrar na sociedade.
+ */
+const ligacoesComContratos = () =>
+  db()
+    .select({
+      pessoaSlug: pessoa.slug,
+      pessoaNome: pessoa.nome,
+      qualificacao: participacaoSocietaria.qualificacao,
+      entradaEm: participacaoSocietaria.entradaEm,
+      empresaCnpj: organizacao.cnpj,
+      empresaNome: organizacao.razaoSocial,
+      contratoId: contrato.id,
+      numeroControlePncp: contrato.numeroControlePncp,
+      ano: contrato.ano,
+      sequencial: contrato.sequencial,
+      orgaoCnpj: contrato.orgaoCnpj,
+      orgaoNome: contrato.orgaoNome,
+      siglaUf: contrato.siglaUf,
+      objeto: contrato.objeto,
+      valorGlobal: contrato.valorGlobal,
+      assinadoEm: contrato.assinadoEm,
+      emendaParlamentar: contrato.emendaParlamentar,
+      anteriorAEntrada: sql<boolean>`coalesce(${contrato.assinadoEm} < ${participacaoSocietaria.entradaEm}, false)`,
+    })
+    .from(participacaoSocietaria)
+    .innerJoin(pessoa, eq(pessoa.id, participacaoSocietaria.pessoaId))
+    .innerJoin(organizacao, eq(organizacao.id, participacaoSocietaria.organizacaoId))
+    .innerJoin(contrato, eq(contrato.fornecedorCnpj, organizacao.cnpj))
+    .where(
+      sql`${participacaoSocietaria.referencia} = (SELECT max(referencia) FROM core.participacao_societaria)`,
+    );
+
+export async function painelEmpresasLigadas() {
+  const linhas = await ligacoesComContratos();
+
+  // Cada contrato conta uma vez no total geral, mesmo com vários políticos sócios.
+  const contratosUnicos = new Map(linhas.map((l) => [l.contratoId, l]));
+  const soma = (xs: { valorGlobal: string | null }[]) =>
+    xs.reduce((s, x) => s + Number(x.valorGlobal ?? 0), 0);
+
+  const agrupar = <K extends string>(chave: (l: (typeof linhas)[number]) => K) => {
+    const grupos = new Map<K, (typeof linhas)[number][]>();
+    for (const l of linhas) grupos.set(chave(l), [...(grupos.get(chave(l)) ?? []), l]);
+    return grupos;
+  };
+
+  const porPolitico = [...agrupar((l) => l.pessoaSlug)].map(([slug, ls]) => {
+    const contratos = [...new Map(ls.map((l) => [l.contratoId, l])).values()];
+    return {
+      slug,
+      nome: ls[0]!.pessoaNome,
+      empresas: new Set(ls.map((l) => l.empresaCnpj)).size,
+      contratos: contratos.length,
+      valor: soma(contratos),
+      anterioresAEntrada: contratos.filter((c) => c.anteriorAEntrada).length,
+    };
+  });
+
+  const porOrgao = [...agrupar((l) => l.orgaoCnpj)].map(([cnpj, ls]) => {
+    const contratos = [...new Map(ls.map((l) => [l.contratoId, l])).values()];
+    return {
+      cnpj,
+      nome: ls[0]!.orgaoNome,
+      siglaUf: ls[0]!.siglaUf,
+      contratos: contratos.length,
+      valor: soma(contratos),
+      politicos: new Set(ls.map((l) => l.pessoaSlug)).size,
+    };
+  });
+
+  const porEmpresa = [...agrupar((l) => l.empresaCnpj!)].map(([cnpj, ls]) => {
+    const contratos = [...new Map(ls.map((l) => [l.contratoId, l])).values()].sort((a, b) =>
+      String(b.assinadoEm ?? '').localeCompare(String(a.assinadoEm ?? '')),
+    );
+    const politicos = [...new Map(ls.map((l) => [l.pessoaSlug, l])).values()].map((l) => ({
+      slug: l.pessoaSlug,
+      nome: l.pessoaNome,
+      qualificacao: l.qualificacao,
+      entradaEm: l.entradaEm,
+    }));
+    return { cnpj, nome: ls[0]!.empresaNome, politicos, contratos, valor: soma(contratos) };
+  });
+
+  const ordenar = <T extends { valor: number }>(xs: T[]) => xs.sort((a, b) => b.valor - a.valor);
+  return {
+    totais: {
+      contratos: contratosUnicos.size,
+      valor: soma([...contratosUnicos.values()]),
+      empresas: porEmpresa.length,
+      politicos: porPolitico.length,
+      orgaos: porOrgao.length,
+      comEmenda: [...contratosUnicos.values()].filter((c) => c.emendaParlamentar).length,
+    },
+    porPolitico: ordenar(porPolitico),
+    porOrgao: ordenar(porOrgao),
+    porEmpresa: ordenar(porEmpresa),
+    cobertura: await coberturaContratos(),
+  };
 }

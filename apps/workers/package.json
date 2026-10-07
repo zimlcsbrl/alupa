@@ -7,6 +7,7 @@
     "dev": "tsx watch --env-file-if-exists=../../.env src/index.ts",
     "start": "tsx --env-file-if-exists=../../.env src/index.ts",
     "pncp:contratacoes": "tsx --env-file-if-exists=../../.env src/cli/pncp-contratacoes.ts",
+    "pncp:contratos": "tsx --env-file-if-exists=../../.env src/cli/pncp-contratos.ts",
     "parlamentares": "tsx --env-file-if-exists=../../.env src/cli/parlamentares.ts",
     "tse:candidaturas": "tsx --env-file-if-exists=../../.env src/cli/tse-candidaturas.ts",
     "receita:socios": "tsx --env-file-if-exists=../../.env src/cli/receita-socios.ts",

@@ -1757,3 +1757,134 @@ h3 {
     grid-column: auto;
   }
 }
+
+/* ---------- Amparo legal e ícone "?" ---------- */
+.info-tip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 6px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-family: var(--font-nunito-sans), Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  vertical-align: middle;
+  color: var(--green);
+  opacity: 0.75;
+}
+.info-tip:hover,
+.info-tip:focus-visible {
+  opacity: 1;
+  background: #e9ede3;
+}
+/* Área de toque confortável no celular sem aumentar o ícone. */
+@media (pointer: coarse) {
+  .info-tip {
+    position: relative;
+  }
+  .info-tip::after {
+    content: '';
+    position: absolute;
+    inset: -11px;
+  }
+}
+.legal-sheet {
+  display: grid;
+  gap: 14px;
+  margin: 12px 0 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.legal-sheet dt {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.legal-sheet dd {
+  margin: 4px 0 0;
+}
+.company-contracts,
+.company-contracts-empty {
+  margin: 4px 0 12px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: #f1f4ec;
+  font-size: 14px;
+}
+.company-contracts p {
+  margin: 0 0 8px;
+}
+.company-contracts ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.company-contracts li {
+  display: flex;
+  flex-direction: column;
+}
+.company-contracts li a {
+  font-weight: 700;
+}
+
+/* ---------- Painel de empresas ligadas ---------- */
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.data-table th,
+.data-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.data-table thead th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.data-table td {
+  white-space: nowrap;
+  text-align: right;
+}
+/* Colunas numéricas: título e valor alinhados à direita. */
+.data-table thead th:not(:first-child) {
+  text-align: right;
+}
+.data-table tbody th {
+  font-weight: 400;
+  min-width: 220px;
+}
+.data-table tbody th a {
+  font-weight: 700;
+}
+.table-note {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+.company-people {
+  font-size: 14px;
+  margin: 12px 0;
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { contratacaoSchema, dataPncp, urlContratacoesPublicadas } from './pncp';
+import { contratacaoSchema, contratoSchema, dataPncp, urlContratacoesPublicadas } from './pncp';
 
 // Registro real do PNCP (29/09/2026), reduzido aos campos usados.
 const exemplo = {
@@ -77,5 +77,36 @@ describe('urlContratacoesPublicadas', () => {
     expect(urlContratacoesPublicadas('2026-09-29', 6, 2)).toBe(
       'https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao?dataInicial=20260929&dataFinal=20260929&codigoModalidadeContratacao=6&pagina=2&tamanhoPagina=50',
     );
+  });
+});
+
+describe('contratoSchema', () => {
+  it('aceita um contrato real reduzido', () => {
+    const c = contratoSchema.parse({
+      numeroControlePNCP: '83820894000193-2-000004/2026',
+      numeroControlePncpCompra: '83102277000152-1-000428/2026',
+      anoContrato: 2026,
+      sequencialContrato: 4,
+      tipoPessoa: 'PJ',
+      niFornecedor: '62590358000179',
+      nomeRazaoSocialFornecedor: 'CRAVA CONSTRUÇÕES E ENGENHARIA LTDA',
+      valorInicial: 61000,
+      valorGlobal: 61000,
+      dataAssinatura: '2026-09-11',
+      dataVigenciaInicio: '2026-09-11',
+      dataVigenciaFim: '2027-01-09',
+      emendaParlamentar: null,
+      tipoContrato: { id: 1, nome: 'Contrato (termo inicial)' },
+      categoriaProcesso: { id: 8, nome: 'Serviços' },
+      dataPublicacaoPncp: '2026-09-15T10:00:00',
+      orgaoEntidade: {
+        cnpj: '83820894000193',
+        razaoSocial: 'MUNICIPIO X',
+        poderId: 'E',
+        esferaId: 'M',
+      },
+      unidadeOrgao: { ufSigla: 'SC', codigoIbge: '4204202', nomeUnidade: 'Prefeitura' },
+    });
+    expect(c.niFornecedor).toBe('62590358000179');
   });
 });

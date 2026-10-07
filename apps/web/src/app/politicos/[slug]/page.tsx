@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { CopyButton } from '@/components/copy-button';
 import { DraftNotice } from '@/components/draft-notice';
+import { InfoTip } from '@/components/info-tip';
 import { ParticipacoesSocietarias } from '@/components/participacoes-societarias';
 import { PatrimonioDeclarado } from '@/components/patrimonio-declarado';
 import { buscarPolitico } from '@/lib/dados';
@@ -129,7 +130,9 @@ export default async function PoliticoPage({ params }: PageProps<'/politicos/[sl
       )}
 
       <section className="data-section" aria-labelledby="patrimonio">
-        <h2 id="patrimonio">Candidaturas e patrimônio declarado</h2>
+        <h2 id="patrimonio">
+          Candidaturas e patrimônio declarado <InfoTip tema="patrimonio" />
+        </h2>
         {p.candidaturas.length === 0 ? (
           <p>
             Nenhuma candidatura encontrada nas eleições já importadas (por enquanto, 2022, 2024 e
@@ -141,12 +144,19 @@ export default async function PoliticoPage({ params }: PageProps<'/politicos/[sl
       </section>
 
       <section className="data-section" aria-labelledby="empresas">
-        <h2 id="empresas">Participação em empresas</h2>
-        <ParticipacoesSocietarias participacoes={p.participacoes} />
+        <h2 id="empresas">
+          Participação em empresas <InfoTip tema="empresas" />
+        </h2>
+        <ParticipacoesSocietarias
+          participacoes={p.participacoes}
+          cobertura={p.coberturaContratos}
+        />
       </section>
 
       <section className="data-section" aria-labelledby="imprensa">
-        <h2 id="imprensa">Imprensa</h2>
+        <h2 id="imprensa">
+          Imprensa <InfoTip tema="imprensa" />
+        </h2>
         {p.materias.length === 0 ? (
           <p>Nenhuma matéria selecionada ainda.</p>
         ) : (
@@ -172,7 +182,9 @@ export default async function PoliticoPage({ params }: PageProps<'/politicos/[sl
       </section>
 
       <section className="data-section" aria-labelledby="contatos">
-        <h2 id="contatos">Contatos públicos</h2>
+        <h2 id="contatos">
+          Contatos públicos <InfoTip tema="contatos" />
+        </h2>
         {emails.length === 0 && sites.length === 0 && telefones.length === 0 ? (
           <p>Contato público não localizado.</p>
         ) : (

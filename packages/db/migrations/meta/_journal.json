@@ -71,6 +71,13 @@
       "when": 1791380095747,
       "tag": "0009_organizacao_receita",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791408395037,
+      "tag": "0010_contratos",
+      "breakpoints": true
     }
   ]
 }

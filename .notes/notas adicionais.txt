@@ -1,0 +1,20 @@
+Criar página de amparo legal para, no futuro incluir pequenos ícones de ? ao lado de cada informação, explicando como buscamos e o amparo legal para divulgação de cada tipo de dado, no caso do CPF e empresas ligadas:
+
+
+
+O amparo jurídico para o seu projeto sustenta-se em três pilares principais:
+
+1. Marco Legal da Transparência
+
+• Lei de Acesso à Informação (Lei nº 12.527/2011): A LAI estabelece que o acesso à informação pública é a regra, e o sigilo é a exceção. Como os dados patrimoniais de candidatos e os quadros societários de empresas (QSA) são de interesse coletivo para fiscalização e prevenção de conflitos de interesse, o tratamento e a divulgação desses dados são garantidos.
+• Política de Dados Abertos: O próprio Tribunal Superior Eleitoral disponibiliza os dados de candidaturas e bens estruturados eletronicamente no Portal de Dados Abertos do TSE, incentivando o livre uso, processamento e cruzamento dessas informações por desenvolvedores e cidadãos.
+
+2. A LGPD e as "Pessoas Politicamente Expostas" (PPE)
+
+A Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018) protege dados pessoais, mas ela traz exceções importantes que se aplicam ao seu caso:
+• Dados Manifestamente Públicos: A LGPD prevê que o tratamento de dados tornados manifestamente públicos pelo titular (como a declaração de bens enviada ao TSE pelo próprio político) pode ser realizado dispensando o consentimento, desde que respeitada a finalidade e a boa-fé.
+• Interesse Público e Controle Social: Agentes políticos possuem o status legal de Pessoas Politicamente Expostas (PPE). Tribunais no Brasil (inclusive o STF) possuem jurisprudência consolidada de que o direito à privacidade e intimidade de ocupantes de cargos públicos ou candidatos é relativizado em prol do interesse público, da transparência e do controle social.
+
+3. Natureza Pública do Registro Empresarial
+
+O Quadro de Sócios e Administradores (QSA) registrado na Receita Federal e nas Juntas Comerciais não é uma informação sigilosa. Qualquer cidadão ou empresa pode consultar os sócios de um CNPJ de forma gratuita no portal da Receita Federal. Como a base de dados original é pública, sua plataforma estará apenas organizando e facilitando o acesso visual a dados que já estão na praça.

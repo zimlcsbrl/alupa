@@ -469,3 +469,50 @@ export const participacaoSocietaria = core.table(
     index().on(t.pessoaId),
   ],
 );
+
+/**
+ * Contrato publicado no PNCP. Por ora a coleta é seletiva: só contratos cujo fornecedor é
+ * uma empresa ligada (como possível correspondência) a uma pessoa acompanhada pela A Lupa.
+ */
+export const contrato = core.table(
+  'contrato',
+  {
+    id: uuid()
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    numeroControlePncp: text().notNull().unique(),
+    /** Contratação de origem, quando informada (liga ao edital). */
+    numeroControlePncpCompra: text(),
+    ano: integer().notNull(),
+    sequencial: integer().notNull(),
+    numero: text(),
+    processo: text(),
+    objeto: text(),
+    orgaoCnpj: text().notNull(),
+    orgaoNome: text().notNull(),
+    unidadeNome: text(),
+    siglaUf: text(),
+    codigoIbgeMunicipio: text(),
+    fornecedorTipo: text(),
+    /** CNPJ completo do fornecedor (PJ). Fornecedores pessoa física não são guardados. */
+    fornecedorCnpj: text(),
+    fornecedorNome: text(),
+    fornecedorId: uuid().references(() => organizacao.id),
+    tipoContrato: text(),
+    categoria: text(),
+    /** Etapa "contratado": valor inicial e valor global (com aditivos) informados no PNCP. */
+    valorInicial: reais(),
+    valorGlobal: reais(),
+    valorAcumulado: reais(),
+    assinadoEm: date(),
+    vigenciaInicio: date(),
+    vigenciaFim: date(),
+    emendaParlamentar: boolean(),
+    publicadoEm: timestamp({ withTimezone: true }).notNull(),
+    atualizadoNaFonteEm: timestamp({ withTimezone: true }),
+    documentoOriginalId: uuid().references(() => documentoOriginal.id),
+    criadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    atualizadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index().on(t.fornecedorCnpj), index().on(t.fornecedorId), index().on(t.orgaoCnpj)],
+);

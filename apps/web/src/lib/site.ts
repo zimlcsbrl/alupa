@@ -33,8 +33,10 @@ export const footerNav = [
   { href: '/politicos', label: 'Políticos' },
   { href: '/eleicoes', label: 'Eleições' },
   { href: '/orgaos', label: 'Órgãos' },
+  { href: '/empresas-ligadas', label: 'Empresas de políticos' },
   { href: '/sobre', label: 'Sobre' },
   { href: '/manifesto', label: 'Manifesto' },
+  { href: '/metodologia/amparo-legal', label: 'Amparo legal' },
   { href: '/sobre#contato', label: 'Contato' },
   { href: '/privacidade', label: 'Privacidade' },
   { href: '/termos', label: 'Termos de uso' },
@@ -46,6 +48,7 @@ export const publishedRoutes = [
   '/brasil-em-numeros',
   '/sobre',
   '/manifesto',
+  '/metodologia/amparo-legal',
   '/privacidade',
   '/termos',
 ];

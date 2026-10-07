@@ -1,5 +1,6 @@
 import { cnpjDaMatriz } from '@alupa/domain';
-import { emReais, formatarCnpj, formatarData } from '@/lib/formatos';
+import { InfoTip } from '@/components/info-tip';
+import { descreverCobertura, emReais, formatarCnpj, formatarData } from '@/lib/formatos';
 
 interface Empresa {
   slug: string | null;
@@ -29,6 +30,81 @@ interface Participacao {
   metodo: string;
   referencia: string;
   empresa: Empresa | null;
+  contratos: Contrato[];
+}
+
+interface Contrato {
+  id: string;
+  numeroControlePncp: string;
+  ano: number;
+  sequencial: number;
+  orgaoNome: string;
+  siglaUf: string | null;
+  objeto: string | null;
+  valorGlobal: string | null;
+  assinadoEm: string | null;
+  emendaParlamentar: boolean | null;
+}
+
+interface Cobertura {
+  de: string;
+  ate: string;
+  dias: number;
+}
+
+/** Página do contrato no PNCP: o número de controle começa pelo CNPJ do órgão. */
+const urlContratoPncp = (c: Contrato) =>
+  `https://pncp.gov.br/app/contratos/${c.numeroControlePncp.slice(0, 14)}/${c.ano}/${c.sequencial}`;
+
+function ContratosDaEmpresa({
+  contratos,
+  cobertura,
+}: {
+  contratos: Contrato[];
+  cobertura: Cobertura | null;
+}) {
+  const quando = descreverCobertura(cobertura);
+  const periodo = quando ? `contratos publicados no PNCP ${quando}` : null;
+  if (contratos.length === 0) {
+    return (
+      <p className="company-contracts-empty">
+        {periodo
+          ? `Nenhum contrato público encontrado nos ${periodo}. Períodos anteriores ainda não foram verificados.`
+          : 'Contratos públicos ainda não verificados para esta empresa.'}
+      </p>
+    );
+  }
+  const total = contratos.reduce((s, c) => s + Number(c.valorGlobal ?? 0), 0);
+  return (
+    <div className="company-contracts">
+      <p>
+        <strong>
+          {contratos.length} {contratos.length === 1 ? 'contrato público' : 'contratos públicos'} ·{' '}
+          {emReais(total)}
+        </strong>{' '}
+        em valor global contratado ({periodo ?? 'período coletado'}).
+      </p>
+      <ul>
+        {contratos.slice(0, 5).map((c) => (
+          <li key={c.id}>
+            <a href={urlContratoPncp(c)}>
+              {c.orgaoNome}
+              {c.siglaUf ? ` (${c.siglaUf})` : ''} ↗
+            </a>
+            <span>
+              {c.assinadoEm ? `${formatarData(c.assinadoEm)} · ` : ''}
+              {emReais(c.valorGlobal)}
+              {c.emendaParlamentar ? ' · pago com emenda parlamentar' : ''}
+            </span>
+            {c.objeto && <span className="data-note">{c.objeto}</span>}
+          </li>
+        ))}
+      </ul>
+      {contratos.length > 5 && (
+        <p className="data-note">E mais {contratos.length - 5} contrato(s) no período.</p>
+      )}
+    </div>
+  );
 }
 
 const urlComprovante = (cnpj: string) =>
@@ -55,7 +131,13 @@ function Localizacao({ empresa }: { empresa: Empresa }) {
   return <>{[empresa.endereco, cidade].filter(Boolean).join(' · ') || 'Endereço não informado'}</>;
 }
 
-export function ParticipacoesSocietarias({ participacoes }: { participacoes: Participacao[] }) {
+export function ParticipacoesSocietarias({
+  participacoes,
+  cobertura,
+}: {
+  participacoes: Participacao[];
+  cobertura: Cobertura | null;
+}) {
   if (participacoes.length === 0) {
     return (
       <p>
@@ -128,8 +210,11 @@ export function ParticipacoesSocietarias({ participacoes }: { participacoes: Par
                 )}
               </dl>
 
+              {e && <ContratosDaEmpresa contratos={p.contratos} cobertura={cobertura} />}
+
               <p className="data-note">
-                Na Receita, o sócio aparece como {p.nomeNaFonte} ({p.cpfParcial}).{' '}
+                Na Receita, o sócio aparece como {p.nomeNaFonte} ({p.cpfParcial}){' '}
+                <InfoTip tema="cpf" />.{' '}
                 {cnpj && <a href={urlComprovante(cnpj)}>Comprovante de inscrição na Receita ↗</a>}
               </p>
             </li>

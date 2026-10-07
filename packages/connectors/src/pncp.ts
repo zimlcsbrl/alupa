@@ -151,3 +151,81 @@ export function dataPncp(valor: string | null | undefined): Date | null {
   const data = new Date(temFuso ? valor : `${valor}-03:00`);
   return Number.isNaN(data.getTime()) ? null : data;
 }
+
+// ---------- Contratos ----------
+
+export const contratoSchema = z.object({
+  numeroControlePNCP: z.string(),
+  numeroControlePncpCompra: texto,
+  anoContrato: z.number().int(),
+  sequencialContrato: z.number().int(),
+  numeroContratoEmpenho: texto,
+  processo: texto,
+  objetoContrato: texto,
+  informacaoComplementar: texto,
+  /** PJ, PF ou PE (estrangeiro). */
+  tipoPessoa: texto,
+  /** CNPJ (PJ) ou CPF (PF) do fornecedor. */
+  niFornecedor: texto,
+  nomeRazaoSocialFornecedor: texto,
+  valorInicial: z.number().nullish(),
+  valorGlobal: z.number().nullish(),
+  valorAcumulado: z.number().nullish(),
+  dataAssinatura: texto,
+  dataVigenciaInicio: texto,
+  dataVigenciaFim: texto,
+  emendaParlamentar: z.boolean().nullish(),
+  receita: z.boolean().nullish(),
+  tipoContrato: z.object({ id: z.number().int().nullish(), nome: texto }).nullish(),
+  categoriaProcesso: z.object({ id: z.number().int().nullish(), nome: texto }).nullish(),
+  dataPublicacaoPncp: z.string(),
+  dataAtualizacaoGlobal: texto,
+  orgaoEntidade: orgaoEntidadeSchema,
+  unidadeOrgao: unidadeOrgaoSchema,
+});
+
+export type ContratoPncp = z.infer<typeof contratoSchema>;
+
+const paginaContratosSchema = z.object({
+  data: z.array(contratoSchema),
+  totalRegistros: z.number().int(),
+  totalPaginas: z.number().int(),
+});
+
+/**
+ * O endpoint de contratos aceita páginas de 500 registros (testado em 07/10/2026), embora a
+ * documentação indique 50. Com 50, um dia típico exige ~150 requisições de ~2 s cada.
+ */
+export const TAMANHO_PAGINA_CONTRATOS = 500;
+
+export function urlContratosPublicados(dia: string, pagina: number) {
+  const params = new URLSearchParams({
+    dataInicial: formatoData(dia),
+    dataFinal: formatoData(dia),
+    pagina: String(pagina),
+    tamanhoPagina: String(TAMANHO_PAGINA_CONTRATOS),
+  });
+  return `${BASE}/v1/contratos?${params}`;
+}
+
+/** Uma página de contratos publicados no PNCP em um dia. */
+export async function contratosPublicados(dia: string, pagina: number) {
+  const resposta = await buscar(urlContratosPublicados(dia, pagina));
+  if (resposta.status === 204 || resposta.texto.trim() === '') {
+    return { resposta, contratos: [] as ContratoPncp[], totalRegistros: 0, totalPaginas: 0 };
+  }
+  const dados = validarJson(resposta, paginaContratosSchema);
+  return {
+    resposta,
+    contratos: dados.data,
+    totalRegistros: dados.totalRegistros,
+    totalPaginas: dados.totalPaginas,
+  };
+}
+
+/** Datas só com dia ("2026-09-11") viram meio-dia de Brasília, para não mudar de dia no fuso. */
+export function diaPncp(valor: string | null | undefined): string | null {
+  if (!valor) return null;
+  const m = valor.match(/^(\d{4}-\d{2}-\d{2})/);
+  return m ? m[1]! : null;
+}

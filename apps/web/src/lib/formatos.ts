@@ -84,3 +84,17 @@ export function lerPagina(valor: string | string[] | undefined, maximo = 20) {
 
 export const lerTexto = (valor: string | string[] | undefined, limite = 80) =>
   (Array.isArray(valor) ? valor[0] : valor)?.trim().slice(0, limite) ?? '';
+
+/**
+ * Descreve o período verificado pela coleta. Só diz "entre X e Y" quando todos os dias do
+ * intervalo foram verificados; com lacunas, informa quantos dias foram cobertos.
+ */
+export function descreverCobertura(c: { de: string; ate: string; dias: number } | null) {
+  if (!c) return null;
+  const intervalo =
+    Math.round((Date.parse(`${c.ate}T12:00:00Z`) - Date.parse(`${c.de}T12:00:00Z`)) / 86_400_000) +
+    1;
+  return c.dias >= intervalo
+    ? `entre ${formatarData(c.de)} e ${formatarData(c.ate)}`
+    : `em ${c.dias} dos ${intervalo} dias entre ${formatarData(c.de)} e ${formatarData(c.ate)} (a coleta ainda tem lacunas)`;
+}
