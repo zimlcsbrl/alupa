@@ -27,14 +27,17 @@ jobs:
       - run: pnpm test
       - run: pnpm build
 
-  # Banco de preview: uma branch do Neon por PR, criada a partir de "main".
+  # Banco de preview: uma branch do Neon por PR, criada a partir da branch padrão do projeto.
   # Requer o secret NEON_API_KEY e a variável NEON_PROJECT_ID no repositório.
+  # NEON_DATABASE e NEON_ROLE são opcionais (padrão: neondb / neondb_owner).
   banco-preview:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     env:
       NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
       NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+      NEON_DATABASE: ${{ vars.NEON_DATABASE || 'neondb' }}
+      NEON_ROLE: ${{ vars.NEON_ROLE || 'neondb_owner' }}
       BRANCH: preview/pr-${{ github.event.number }}
     steps:
       - uses: actions/checkout@v4
@@ -47,11 +50,15 @@ jobs:
       - name: Criar branch do Neon (se não existir)
         run: |
           npx --yes neonctl branches get "$BRANCH" --project-id "$NEON_PROJECT_ID" >/dev/null 2>&1 \
-            || npx --yes neonctl branches create --name "$BRANCH" --parent main --project-id "$NEON_PROJECT_ID"
+            || npx --yes neonctl branches create --name "$BRANCH" --project-id "$NEON_PROJECT_ID"
       - name: Obter URLs de conexão
         run: |
-          echo "DATABASE_URL_UNPOOLED=$(npx --yes neonctl connection-string "$BRANCH" --project-id "$NEON_PROJECT_ID" --database-name alupa --role-name alupa_migrator)" >> "$GITHUB_ENV"
-          echo "DATABASE_URL=$(npx --yes neonctl connection-string "$BRANCH" --project-id "$NEON_PROJECT_ID" --database-name alupa --role-name alupa_app --pooled)" >> "$GITHUB_ENV"
+          direta=$(npx --yes neonctl connection-string "$BRANCH" --project-id "$NEON_PROJECT_ID" --database-name "$NEON_DATABASE" --role-name "$NEON_ROLE")
+          pooled=$(npx --yes neonctl connection-string "$BRANCH" --project-id "$NEON_PROJECT_ID" --database-name "$NEON_DATABASE" --role-name "$NEON_ROLE" --pooled)
+          echo "::add-mask::$direta"
+          echo "::add-mask::$pooled"
+          echo "DATABASE_URL_UNPOOLED=$direta" >> "$GITHUB_ENV"
+          echo "DATABASE_URL=$pooled" >> "$GITHUB_ENV"
       - run: pnpm db:migrate
       - run: pnpm db:seed
       - run: pnpm test

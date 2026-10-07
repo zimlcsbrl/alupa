@@ -1,0 +1,8 @@
+
+
+Criei a estrutura de “Brasil em números”, com seções de demografia e renda e um espaço para a futura calculadora de posição na distribuição de renda.
+
+Preciso que crie uma calculadora de renda: ela precisará distinguir renda individual de renda por pessoa da casa para fazer uma comparação válida.
+
+
+A ideia é ter uma calculadora uma calculadores de renda (ganhando x  por mês eu estou entre x% da população do brasil), alem de demonstrar o percentual de pessoas por faixa de renda

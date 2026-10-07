@@ -35,11 +35,11 @@ A paleta é viável. Texto sobre fundo amarelo deve usar o carvão (~9:1).
 
 ### 1.2 Ajustes recomendados
 
-**A. Neon em dev x "Coolify + infraestrutura dedicada" em produção**
+**A. Neon em dev x "Coolify + infraestrutura dedicada" em produção** [ok]
 O documento prevê produção auto-hospedada; dev agora será Neon. Isso é viável desde que o código seja portável:
 
 - Usar driver TCP padrão (`postgres`/postgres.js ou `pg`), **não** o `@neondatabase/serverless` como dependência central. Assim o mesmo código roda em Neon, em Postgres local e em Postgres auto-hospedado.
-- Fixar a **mesma versão major** do Postgres em todos os ambientes (sugestão: 17).
+- Fixar a **mesma versão major** do Postgres em todos os ambientes: **18** (versão do projeto Neon de dev).
 - Usar só extensões disponíveis em ambos: `pg_trgm`, `unaccent`, `btree_gin`, `pgcrypto`. Evitar extensões exclusivas do Neon.
 - Neon expõe duas URLs: **pooled** (host `-pooler`, PgBouncer em modo transação) para a aplicação, e **direta** para migrations, `COPY` em massa e sessões longas dos workers. Prever as duas variáveis desde o início.
 - Decisão em aberto: produção também no Neon (menos operação) ou auto-hospedada (custo previsível em volume alto). O plano mantém as duas portas abertas.
@@ -51,40 +51,40 @@ O documento prevê produção auto-hospedada; dev agora será Neon. Isso é viá
 - Originais (JSON/PDF) vão para o R2/MinIO, **nunca** para o Postgres.
 - Avaliar plano pago do Neon antes da carga completa.
 
-**C. Busca textual: detalhe técnico do `unaccent`**
+**C. Busca textual: detalhe técnico do `unaccent`** [ok]
 `unaccent()` não é `IMMUTABLE` e não pode ser usado diretamente em índices. Criar uma função wrapper imutável e uma configuração de texto `portuguese_unaccent`. Para CNPJ e nomes com erro de digitação, usar `pg_trgm`. Normalizar CNPJ (só dígitos) em coluna própria.
 
 **D. Escopo da "Primeira entrega" ainda está grande**
-Itens que podem sair do MVP sem prejuízo:
+Itens que podem sair do MVP sem prejuízo: [ok em partes]
 
 | Item | Recomendação |
 | --- | --- |
 | Python/OCR para documentos | Adiar. O PNCP entrega JSON estruturado; OCR só entra com fontes locais em PDF. |
 | DuckDB + Parquet | Adiar para a fase de consolidação. |
 | Login de cidadãos (Minha Lupa, alertas) | Fora do MVP, como o próprio documento indica. No MVP, login só para a equipe. |
-| CMS próprio do zero | Substituir por um CMS embutido no Next.js (ver item E). |
+| CMS próprio do zero | Substituir por um CMS embutido no Next.js (ver item E). | cms será uma torre de controle, parecido com o cockpit do blueroom
 
-E um item que vale **adiantar**: a importação básica de **deputados e senadores** (APIs da Câmara e do Senado). É simples, traz e-mails de gabinete com fonte oficial e evita perfis de políticos vazios no MVP — o documento coloca políticos no MVP, mas as fontes deles na expansão.
+E um item que vale **adiantar**: a importação básica de **deputados e senadores** (APIs da Câmara e do Senado). É simples, traz e-mails de gabinete com fonte oficial e evita perfis de políticos vazios no MVP — o documento coloca políticos no MVP, mas as fontes deles na expansão. [ok, pode seguir]
 
-**E. Painel administrativo / CMS**
-Construir rascunho, revisão, agendamento, SEO e preview do zero é caro. Recomenda-se um *spike* com **Payload CMS 3** (roda dentro do app Next.js, usa Postgres, tem controle de acesso e versionamento). Ele pode cobrir: blog, manifesto/metodologia, cadastro de políticos e contatos públicos, e a fila de contribuições. As tabelas do CMS ficam em um schema separado (`cms`), e o domínio de dados públicos fica sob controle de migrations próprias.
+**E. Painel administrativo / CMS** [repetir modelo cockpit do blueroom, apenas mudando para "torre de controle"]
+Construir rascunho, revisão, agendamento, SEO e preview do zero é caro. Recomenda-se um *spike* com **Payload CMS 3** (roda dentro do app Next.js, usa Postgres, tem controle de acesso e versionamento). Ele pode cobrir: editorial (matérias, seções e autores), manifesto/metodologia, cadastro de políticos e contatos públicos, e a fila de contribuições. As tabelas do CMS ficam em um schema separado (`cms`), e o domínio de dados públicos fica sob controle de migrations próprias.
 
-**F. Separação Web x API**
+**F. Separação Web x API** [ok]
 Não é necessário um *serviço* de API separado no MVP, mas é necessária uma **API versionada desde o início** (ver item J): os apps de loja no futuro não conseguem usar Server Components. Recomenda-se um **monorepo** com a lógica de domínio em um pacote compartilhado, usado pelo Next.js (páginas e Route Handlers em `/api/v1`) e pelos workers. A API pública aberta a terceiros, com limites de uso, reaproveita esses mesmos endpoints mais tarde.
 
-**G. Rotas com identificador estável**
+**G. Rotas com identificador estável**~[ok, bom pro seo]
 O documento pede slug + identificador estável, mas as rotas mostram só `[slug]`. Proposta: `/politicos/[id]-[slug]` (ex.: `/politicos/p8f3k2-maria-silva`), com redirecionamento 301 se o slug mudar. Mesmo padrão para entidades, localidades e casos.
 
 **H. LGPD antes da publicação**
 O PNCP traz fornecedores pessoa física (CPF). Antes de publicar qualquer dado:
 
-- Política de mascaramento de CPF definida e aplicada na camada publicada.
-- Termos de uso, política de privacidade e canal de correção publicados.
-- Registro de base legal para cada categoria de dado pessoal tratado.
+- Política de mascaramento de CPF definida e aplicada na camada publicada.[ FORNECEDORES PF TEM OBRIGAÇÃO DE PUBLICIDADE, NÃO SÃO OCULTOS]
+- Termos de uso, política de privacidade e canal de correção publicados [CRIAR JÁ NO INICIO, JUNTO COM ESTRUTURA INICIAL DO SITE WEB].
+- Registro de base legal para cada categoria de dado pessoal tratado [mapear para tratarmos em busca na legislação].
 
 Isso transforma parte das "Decisões pendentes" (política editorial, tratamento de contatos) em **bloqueadores de lançamento**, não de desenvolvimento.
 
-**I. Domínio `.app`**
+**I. Domínio `.app`** [ok]
 Exige HTTPS em todo o domínio (HSTS pré-carregado). Sem impacto real, apenas configurar TLS desde o primeiro deploy de staging. HTTPS também é pré-requisito do PWA.
 
 **J. Requisito primordial: desktop e mobile (PWA agora, lojas depois)**
@@ -185,7 +185,7 @@ alupa/
 
 ## Parte 3 — Configuração do Neon para desenvolvimento
 
-1. Criar projeto `alupa` no Neon, região mais próxima do Brasil disponível (ex.: `aws-sa-east-1`, se oferecida; caso contrário, `us-east`), Postgres 17.
+1. Criar projeto `alupa` no Neon, região mais próxima do Brasil disponível (ex.: `aws-sa-east-1`, se oferecida; caso contrário, `us-east`), Postgres 18. **Feito:** projeto em `sa-east-1`, Postgres 18.6, banco `neondb` com a role dona `neondb_owner` (roles separadas ficam para antes de staging).
 2. Branches:
    - `main` → banco de dev compartilhado com dados de amostra.
    - `dev/<nome>` → branch por desenvolvedor, criada a partir de `main` (cópia instantânea).
@@ -229,6 +229,8 @@ Há duas trilhas paralelas desde o início:
 
 ### Fase 0 — Fundação
 
+> **Andamento (06/10/2026):** concluída, exceto o spike do Payload. Monorepo, infra local, CI, Neon e o site institucional (home, sobre, manifesto, privacidade, termos) publicado na Vercel.
+
 - Monorepo (pnpm + Turborepo), TypeScript estrito, lint, format, `.editorconfig`, `.gitignore`, `.env.example`.
 - `docker-compose.yml` com Redis e MinIO.
 - Projeto Neon, branches, roles e extensões (Parte 3).
@@ -240,6 +242,8 @@ Há duas trilhas paralelas desde o início:
 **Pronto quando:** `pnpm dev` sobe web + workers localmente apontando para o Neon; um PR cria branch Neon, aplica migrations e roda testes.
 
 ### Fase 1 — Modelo de dados núcleo
+
+> **Andamento (06/10/2026):** em curso. Feitos: `ops` (fonte, coleta, checkpoint), `raw.documento_original`, `core.ente_federativo`, `core.organizacao`, `core.orgao`, `core.identificador_externo`; seed do IBGE (União, 27 UFs, 5.571 municípios) com busca trigram sem acento; pacotes `@alupa/domain` (slug, CNPJ) e `@alupa/connectors` (HTTP com retry e validação, IBGE). Faltam: pessoa, mandato/cargo, contato público, contratação, item, resultado, contrato, aditivo, evento financeiro, documento, relação e cobertura.
 
 - `ops`: `fonte`, `coleta`, `checkpoint`, `cobertura` (fonte × ente × período × categoria), `erro_coleta`.
 - `raw`: `documento_original` (URL, id na fonte, data, hash SHA-256, chave no R2, content-type).
@@ -277,10 +281,10 @@ Há duas trilhas paralelas desde o início:
 
 ### Fase 4 — Design system, home e conteúdo
 
-- Tokens (cores, tipografia, espaçamentos, raio 8–12 px), componentes: cabeçalho, busca, atalhos, cards (Caso, Contratação, Emenda, Atualização, Blog), tabela responsiva, linha do tempo, selos de situação (texto + ícone, nunca só cor).
-- Home na ordem proposta no documento, com seções alimentadas por dados reais (Novidades nos dados, Oportunidades e resultados) e editoriais (Sob a lupa, Do blog).
+- Tokens (cores, tipografia, espaçamentos, raio 8–12 px), componentes: cabeçalho, busca, atalhos, cards (Caso, Contratação, Emenda, Atualização, Matéria), tabela responsiva, linha do tempo, selos de situação (texto + ícone, nunca só cor).
+- Home na ordem proposta no documento, com seções alimentadas por dados reais (Novidades nos dados, Oportunidades e resultados) e editoriais (Sob a lupa, Do editorial).
 - "Perto de você" com seleção manual de UF/município (geolocalização opcional).
-- Blog, manifesto e metodologia no CMS, com autoria, datas, referências e histórico de correções; vínculo de artigos com entidades/contratos.
+- Editorial em `/editorial` (capa, seções, matérias e páginas de autor), manifesto e metodologia no CMS, com gênero da matéria, autoria, datas, referências e histórico de correções; vínculo de matérias com entidades/contratos.
 - SEO: metadados, Open Graph, sitemap, dados estruturados.
 - **PWA:** manifest, ícones (incl. maskable), service worker (Serwist) com cache do shell e das páginas recentes, página offline, convite de instalação discreto (não intrusivo), Web Share nos cards e detalhes, navegação inferior em `display-mode: standalone`.
 - Componentes projetados *mobile-first*: tabelas com alternativa em cartões, filtros em *bottom sheet* no celular e em barra lateral no desktop.

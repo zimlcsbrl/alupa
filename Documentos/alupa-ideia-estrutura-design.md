@@ -7,7 +7,7 @@
 - **Versão:** 0.1.
 - **Data:** 06/10/2026.
 - **Status:** concepção e orientação para implementação. Não representa um sistema já desenvolvido.
-- **Decisões confirmadas:** alcance nas três esferas, home como centro do produto, cards e links, pesquisa, blog, manifesto e contatos públicos de políticos e entidades.
+- **Decisões confirmadas:** alcance nas três esferas, home como centro do produto, cards e links, pesquisa, editorial, manifesto e contatos públicos de políticos e entidades.
 - **Propostas iniciais:** identidade visual, textos, stack e sequência de entregas abaixo, sujeitos a refinamento.
 
 ## 1. Ideia e propósito
@@ -67,7 +67,7 @@ Obras, convênios, políticas públicas, receitas, pessoal, atos administrativos
 | Contratações | `/contratacoes/[id]` | Edital, itens, situação, resultados e contratos relacionados. |
 | Contratos | `/contratos/[id]` | Partes, valores, vigência, aditivos e execução vinculada. |
 | Casos | `/casos/[slug]` | Evidências, questionamentos, respostas e pendências. |
-| Blog | `/blog` | Reportagens, análises, guias e atualizações do projeto. |
+| Editorial | `/editorial` | Revista da A Lupa: reportagens, análises, guias e notas, organizadas em seções. |
 | Manifesto | `/manifesto` | Propósito e convocação à participação cidadã. |
 | Participar | `/participar` | Envio de informação, correção ou colaboração. |
 | Metodologia | `/metodologia` | Fontes, critérios, cobertura, limitações e correções. |
@@ -81,14 +81,14 @@ A home deve parecer um portal editorial contemporâneo, próximo e útil. O visi
 
 ### Ordem proposta
 
-1. **Cabeçalho compacto:** marca A Lupa; Explorar; Blog; Manifesto; Participar; Entrar.
+1. **Cabeçalho compacto:** marca A Lupa; Explorar; Editorial; Manifesto; Participar; Entrar.
 2. **Pesquisa em destaque:** título curto, campo amplo e exemplos clicáveis.
 3. **Atalhos:** Minha cidade, Emendas, Políticos, Licitações abertas, Contratos e Pagamentos.
 4. **Sob a lupa:** cards editoriais de casos e temas em acompanhamento.
 5. **Perto de você:** seleção manual de cidade/UF e conteúdos relacionados. Geolocalização apenas opcional.
 6. **Novidades nos dados:** novas publicações, alterações relevantes e fontes integradas.
 7. **Oportunidades e resultados:** contratações com propostas abertas e processos encerrados com resultados disponíveis.
-8. **Do blog:** reportagens, explicadores e guias.
+8. **Do editorial:** reportagens, análises e guias em destaque, como a chamada de capa de uma revista.
 9. **Convite à participação:** trecho do manifesto e link para colaborar.
 10. **Rodapé:** metodologia, fontes e cobertura, sobre, correções, contato, privacidade e termos.
 
@@ -110,7 +110,7 @@ Exemplos de atalhos de pesquisa: “Emendas na minha cidade”, “Licitações 
 | Contratação | Órgão, objeto, modalidade, situação e prazo quando aplicável. |
 | Emenda | Parlamentar ou autoria coletiva, beneficiário, finalidade e valor com etapa identificada. |
 | Atualização | O que mudou, fonte e data da mudança observada. |
-| Blog | Título, resumo, categoria, autoria e data. |
+| Matéria | Título, linha fina, seção, gênero (reportagem, análise, guia, nota), autoria e data. |
 
 Valores devem indicar o que representam: estimado, contratado, empenhado, liquidado ou pago. Imagens são opcionais; cards úteis não podem depender de fotografias genéricas. A home deve evitar rolagem infinita obrigatória e excesso de carrosséis.
 
@@ -185,13 +185,17 @@ Permitir vários contatos por perfil. Exibir “Contato público não localizado
 
 Cobranças por e-mail poderão ser uma evolução, com envio explícito pelo usuário ou equipe, revisão do texto e controle de abuso. Evitar campanhas automáticas de disparo em massa. Protocolos, respostas e publicações terão revisão para retirar dados pessoais irrelevantes.
 
-## 9. Blog e manifesto
+## 9. Editorial e manifesto
 
-### Blog
+### Editorial
 
-Categorias propostas: Sob a lupa; Entenda o dinheiro público; Na sua cidade; Como participar; Novidades da A Lupa.
+O Editorial funciona como a revista da A Lupa, com linguagem e estrutura de jornalismo: capa com destaques, seções fixas, matérias com autoria e expediente.
 
-Os textos poderão vincular políticos, entidades, emendas, contratos e casos. Cada artigo terá autoria, publicação, atualização, referências e histórico de correções relevantes. Conteúdo editorial e dado importado devem ser distinguíveis.
+Seções propostas: Sob a lupa; Entenda o dinheiro público; Na sua cidade; Como participar; Novidades da A Lupa.
+
+Gêneros identificados em cada matéria: reportagem, análise, guia (explicador) e nota. Opinião, quando houver, deve ser rotulada como tal e separada do noticiário.
+
+As matérias poderão vincular políticos, entidades, emendas, contratos e casos. Cada matéria terá título, linha fina, autoria, data de publicação e de atualização, referências e histórico de correções relevantes. Conteúdo editorial e dado importado devem ser distinguíveis.
 
 O CMS inicial usará o mesmo painel administrativo, com rascunho, revisão, publicação agendada, SEO, imagem de capa e preview. Conteúdos fictícios só poderão aparecer em ambiente de demonstração, identificados.
 
@@ -231,7 +235,7 @@ Alertas automáticos serão classificados como situações para verificação. I
 
 | Camada | Tecnologia | Responsabilidade |
 | --- | --- | --- |
-| Web | Next.js + TypeScript | Home, pesquisa, perfis, blog e área do usuário. |
+| Web | Next.js + TypeScript | Home, pesquisa, perfis, editorial e área do usuário. |
 | Aplicação/API | Node.js + TypeScript | Regras do produto, consultas, publicação e participação. |
 | Coletores | Workers separados; Python para tratamento documental | Integrações, arquivos e OCR quando necessário. |
 | Filas | Redis + BullMQ | Agendamento, limites por fonte, tentativas e retomada. |
@@ -294,7 +298,7 @@ Implementar permissões editoriais, log de alterações, revisão de contribuiç
 - PNCP nas três esferas, dentro da cobertura disponível.
 - Perfis de órgãos e fornecedores relacionados aos registros importados.
 - Cadastro de políticos e entidades com contatos públicos verificados quando disponíveis.
-- Blog, manifesto, metodologia e formulário de participação.
+- Editorial, manifesto, metodologia e formulário de participação.
 - Páginas de detalhes com fontes, documentos e atualização.
 - Painel para cadastro, revisão e publicação.
 

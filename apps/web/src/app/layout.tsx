@@ -1,8 +1,18 @@
 import type { Metadata, Viewport } from 'next';
+import localFont from 'next/font/local';
 import Image from 'next/image';
 import Link from 'next/link';
-import { footerNav, isIndexable, mainNav, siteDescription, siteUrl, socialImage } from '@/lib/site';
+import { footerNav, isIndexable, siteDescription, siteUrl, socialImage } from '@/lib/site';
+import { SiteNav } from '@/components/site-nav';
 import './globals.css';
+
+const nunitoSans = localFont({
+  src: '../fonts/nunito-sans.ttf',
+  weight: '200 1000',
+  style: 'normal',
+  display: 'swap',
+  variable: '--font-nunito-sans',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -29,7 +39,7 @@ export const viewport: Viewport = { themeColor: '#245744' };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className={nunitoSans.variable}>
       <body>
         <a className="skip-link" href="#conteudo">
           Pular para o conteúdo
@@ -38,13 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Link href="/" aria-label="A Lupa — início">
             <Image src="/brand/logo.svg" alt="A Lupa" width={195} height={50} priority />
           </Link>
-          <nav aria-label="Navegação principal">
-            {mainNav.map((item) => (
-              <Link key={item.href} href={item.href}>
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <SiteNav />
         </header>
         {children}
         <footer className="site-footer">

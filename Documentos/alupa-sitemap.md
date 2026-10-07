@@ -4,7 +4,7 @@ Proposta de arquitetura da informação, 06/10/2026. Complementa o documento de 
 
 ## Navegação
 
-Cabeçalho futuro: **marca → início · Explorar · Blog · Manifesto · Participar · Entrar**.
+Cabeçalho futuro: **marca → início · Explorar · Editorial · Manifesto · Participar · Entrar**.
 Explorar abre os assuntos, sem obrigar o visitante a conhecer a estrutura administrativa. A home concentra busca, atalhos, cards e novidades; não será apenas uma apresentação institucional. A página inicial desta entrega é provisória, enquanto os dados são implementados.
 
 ```text
@@ -28,9 +28,10 @@ Explorar abre os assuntos, sem obrigar o visitante a conhecer a estrutura admini
 │   └── [id]                       Com etapa financeira e fonte explícitas
 ├── casos
 │   └── [slug]
-├── blog
-│   ├── categoria/[slug]
-│   └── [slug]
+├── editorial                      Capa da revista: destaques e últimas matérias
+│   ├── secao/[slug]               Seções editoriais (ex.: Sob a lupa, Na sua cidade)
+│   ├── autores/[slug]             Página de cada autor, com suas matérias
+│   └── [slug]                     Matéria: reportagem, análise, guia ou nota
 ├── manifesto
 ├── participar
 │   ├── enviar-informacao
@@ -56,11 +57,11 @@ Administração em `/admin`, com autenticação e autorização próprias, fora 
 
 **Home → cidade ou assunto → registro → documento de origem → acompanhar ou contribuir.**
 
-Perfis de políticos e entidades conectam registros e contatos institucionais verificados. Um caso conecta evidências e perguntas; não deve converter vínculos ou alertas em acusações. Blog explica os dados e aponta para os registros citados.
+Perfis de políticos e entidades conectam registros e contatos institucionais verificados. Um caso conecta evidências e perguntas; não deve converter vínculos ou alertas em acusações. O Editorial explica os dados e aponta para os registros citados.
 
 ## Ordem de implementação
 
-1. Home editorial, pesquisa, contratações, contratos, entidades, blog, participação, metodologia e cobertura.
+1. Home editorial, pesquisa, contratações, contratos, entidades, editorial, participação, metodologia e cobertura.
 2. Localidades, políticos, emendas, despesas parlamentares, pagamentos e casos, conforme as fontes disponíveis.
 3. Minha Lupa e alertas, depois de cadastro, preferências e rotinas de atualização.
 

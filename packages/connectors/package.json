@@ -1,0 +1,23 @@
+{
+  "name": "@alupa/connectors",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./ibge": "./src/ibge.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "zod": "^4"
+  },
+  "devDependencies": {
+    "@alupa/config": "workspace:*",
+    "@types/node": "^24",
+    "typescript": "^5",
+    "vitest": "^3"
+  }
+}

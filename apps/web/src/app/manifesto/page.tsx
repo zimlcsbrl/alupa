@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { manifesto, manifestoClosing } from '@/content/manifesto';
 import { socialImage } from '@/lib/site';
+import { ContentPage } from '@/components/content-page';
 
 const description =
   'O dinheiro público tem dono: todos nós. Conheça os compromissos da A Lupa com clareza, rigor, independência e participação cidadã.';
@@ -27,24 +28,26 @@ export const metadata: Metadata = {
 
 export default function ManifestoPage() {
   return (
-    <main id="conteudo" className="manifesto">
-      <article>
-        <p className="eyebrow">NOSSO MANIFESTO</p>
-        <h1>
+    <ContentPage
+      eyebrow="NOSSO MANIFESTO"
+      title={
+        <>
           Olhar de perto.
           <br />
           <em>Participar de verdade.</em>
-        </h1>
-        {manifesto.map((section) => (
-          <section key={section.title}>
-            <h2>{section.title}</h2>
-            {section.paragraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </section>
-        ))}
-        <p className="closing">{manifestoClosing}</p>
-      </article>
-    </main>
+        </>
+      }
+      lead="Clareza para entender. Rigor para conferir. Espaço para participar."
+    >
+      {manifesto.map((section) => (
+        <section key={section.title}>
+          <h2>{section.title}</h2>
+          {section.paragraphs.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </section>
+      ))}
+      <p className="closing">{manifestoClosing}</p>
+    </ContentPage>
   );
 }

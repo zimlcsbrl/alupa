@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import { createDb } from '../client';
 import { fonte } from '../schema';
+import { seedLocalidades } from './localidades';
 
 config({ path: '../../.env' });
 
@@ -29,7 +30,12 @@ const fontes = [
 
 const db = createDb('direct');
 
-await db.insert(fonte).values(fontes).onConflictDoNothing({ target: fonte.codigo });
-console.log(`Seed concluído: ${fontes.length} fontes verificadas.`);
+try {
+  await db.insert(fonte).values(fontes).onConflictDoNothing({ target: fonte.codigo });
+  console.log(`Fontes: ${fontes.length} verificadas.`);
 
-await db.$client.end();
+  const localidades = await seedLocalidades(db);
+  console.log(`Localidades: União, ${localidades.ufs} UFs e ${localidades.municipios} municípios.`);
+} finally {
+  await db.$client.end();
+}

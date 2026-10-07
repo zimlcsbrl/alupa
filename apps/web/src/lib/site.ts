@@ -20,11 +20,13 @@ export const contactEmail = 'contato@alupa.app';
 export const isIndexable = process.env.ALUPA_INDEXAR === 'true';
 
 export const mainNav = [
+  { href: '/brasil-em-numeros', label: 'Brasil em números' },
   { href: '/sobre', label: 'Sobre' },
   { href: '/manifesto', label: 'Manifesto' },
 ];
 
 export const footerNav = [
+  { href: '/brasil-em-numeros', label: 'Brasil em números' },
   { href: '/sobre', label: 'Sobre' },
   { href: '/manifesto', label: 'Manifesto' },
   { href: '/sobre#contato', label: 'Contato' },
@@ -33,7 +35,14 @@ export const footerNav = [
 ];
 
 /** Rotas publicadas com conteúdo real; alimenta o sitemap. */
-export const publishedRoutes = ['/', '/sobre', '/manifesto', '/privacidade', '/termos'];
+export const publishedRoutes = [
+  '/',
+  '/brasil-em-numeros',
+  '/sobre',
+  '/manifesto',
+  '/privacidade',
+  '/termos',
+];
 
 /** Metadados padrão de uma página institucional, com título, canonical e compartilhamento. */
 export function pageMetadata({

@@ -41,8 +41,10 @@ export default function SobrePage() {
         <h2>Em que etapa estamos</h2>
         <p>
           O projeto está em construção. Nesta primeira versão, publicamos apenas nossa apresentação,
-          o <Link href="/manifesto">manifesto</Link> e as políticas de uso e privacidade. Ainda não
-          há dados, pesquisa, cadastro ou envio de informações.
+          o <Link href="/manifesto">manifesto</Link>, as políticas de uso e privacidade e um
+          panorama inicial de <Link href="/brasil-em-numeros">Brasil em números</Link>, com
+          indicadores do IBGE. A pesquisa de registros públicos, o cadastro e o envio de informações
+          ainda estão em preparação.
         </p>
         <p>As próximas etapas previstas são:</p>
         <ul>
@@ -51,7 +53,10 @@ export default function SobrePage() {
             Contratações Públicas (PNCP), com fonte e data de atualização em cada registro.
           </li>
           <li>Páginas de órgãos, fornecedores, parlamentares e seus contatos públicos oficiais.</li>
-          <li>Blog com reportagens, explicações e guias sobre o dinheiro público.</li>
+          <li>
+            Editorial, com reportagens, análises e guias sobre o dinheiro público, organizados em
+            seções como numa revista.
+          </li>
           <li>Canal para enviar informações, documentos e pedidos de correção.</li>
           <li>Acompanhamento de proposições legislativas e de como votaram os parlamentares.</li>
         </ul>

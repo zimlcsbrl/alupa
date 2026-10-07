@@ -16,6 +16,8 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@alupa/connectors": "workspace:*",
+    "@alupa/domain": "workspace:*",
     "drizzle-orm": "^0.44",
     "postgres": "^3"
   },
