@@ -1,14 +1,24 @@
 import { sql } from 'drizzle-orm';
 import {
   type AnyPgColumn,
+  boolean,
   check,
+  customType,
   index,
+  integer,
+  numeric,
   pgSchema,
   text,
   timestamp,
   unique,
   uuid,
 } from 'drizzle-orm/pg-core';
+import { documentoOriginal } from './raw';
+
+const tsvector = customType<{ data: string }>({ dataType: () => 'tsvector' });
+
+/** Valores monetários em reais, sem perda de precisão (o driver devolve texto). */
+const reais = () => numeric({ precision: 18, scale: 2 });
 
 /** Camada normalizada: entidades com identificadores próprios e estáveis. */
 export const core = pgSchema('core');
@@ -98,7 +108,8 @@ export const orgao = core.table(
     criadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
     atualizadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index().on(t.enteId), index().on(t.organizacaoId)],
+  // Um órgão por CNPJ: as unidades administrativas ficam na contratação.
+  (t) => [index().on(t.enteId), unique('orgao_organizacao_unica').on(t.organizacaoId)],
 );
 
 /**
@@ -122,5 +133,67 @@ export const identificadorExterno = core.table(
   (t) => [
     unique().on(t.sistema, t.valor, t.entidadeTipo),
     index().on(t.entidadeTipo, t.entidadeId),
+  ],
+);
+
+/**
+ * Contratação pública (licitação, dispensa, inexigibilidade etc.), como publicada no PNCP.
+ * Chave natural: o número de controle do PNCP. Os valores guardam a etapa que representam.
+ */
+export const contratacao = core.table(
+  'contratacao',
+  {
+    id: uuid()
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    numeroControlePncp: text().notNull().unique(),
+    orgaoId: uuid()
+      .notNull()
+      .references(() => orgao.id),
+    /** Ente da unidade que conduz a contratação (município, UF ou União). */
+    enteId: uuid()
+      .notNull()
+      .references(() => enteFederativo.id),
+    unidadeCodigo: text(),
+    unidadeNome: text(),
+    ano: integer().notNull(),
+    sequencial: integer().notNull(),
+    numero: text(),
+    processo: text(),
+    objeto: text(),
+    informacaoComplementar: text(),
+    modalidadeId: integer().notNull(),
+    modalidadeNome: text(),
+    modoDisputaId: integer(),
+    modoDisputaNome: text(),
+    amparoLegalCodigo: integer(),
+    amparoLegalNome: text(),
+    situacaoId: integer().notNull(),
+    situacaoNome: text(),
+    registroDePrecos: boolean(),
+    /** Etapa "estimado": valor previsto pelo órgão. */
+    valorEstimado: reais(),
+    /** Etapa "homologado": valor do resultado, quando houver. */
+    valorHomologado: reais(),
+    aberturaPropostasEm: timestamp({ withTimezone: true }),
+    encerramentoPropostasEm: timestamp({ withTimezone: true }),
+    publicadaEm: timestamp({ withTimezone: true }).notNull(),
+    /** Última atualização informada pela fonte; decide se um registro novo substitui o atual. */
+    atualizadaNaFonteEm: timestamp({ withTimezone: true }),
+    linkSistemaOrigem: text(),
+    /** Página da API de onde o registro foi lido. */
+    documentoOriginalId: uuid().references(() => documentoOriginal.id),
+    busca: tsvector().generatedAlwaysAs(
+      sql`to_tsvector('public.portuguese_unaccent', coalesce(objeto, '') || ' ' || coalesce(numero, '') || ' ' || coalesce(processo, ''))`,
+    ),
+    criadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    atualizadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index().on(t.orgaoId),
+    index().on(t.enteId, t.publicadaEm),
+    index().on(t.modalidadeId, t.publicadaEm),
+    index().on(t.encerramentoPropostasEm),
+    index('contratacao_busca').using('gin', t.busca),
   ],
 );

@@ -27,3 +27,6 @@ Thumbs.db
 
 # Claude Code (configurações locais)
 .claude/settings.local.json
+
+# Originais guardados localmente em dev (STORAGE_DRIVER=local)
+.data/

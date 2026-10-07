@@ -164,28 +164,27 @@ export default function BrasilEmNumeros() {
         </div>
       </section>
       <section id="calculadora" className="calculator-section">
-        <div>
+        <div className="calculator-intro">
           <span className="tag">Dados de 2025</span>
           <p className="eyebrow">03 / SUA RENDA EM PERSPECTIVA</p>
-          <h2>
-            Onde minha renda
-            <br />
-            entra nessa história?
-          </h2>
+          <h2>Onde minha renda entra nessa história?</h2>
           <p>
             Responda: “Com essa renda mensal, estou entre quais faixas da população?” A comparação
             usa a distribuição de renda publicada pelo IBGE.
           </p>
-          <p>
-            Escolha o que comparar. A <strong>renda por pessoa da casa</strong> divide tudo o que a
-            casa recebe pelos moradores e se compara com toda a população. A{' '}
-            <strong>renda do trabalho</strong> considera só o que você ganha trabalhando e se
-            compara com quem trabalha. Misturar as duas leva a conclusões erradas.
-          </p>
-          <p>
-            O IBGE publica limites de faixas, não a renda de cada pessoa. Por isso o resultado
-            indica uma faixa, e não uma posição exata.
-          </p>
+          <details className="income-methodology">
+            <summary>Entenda as duas comparações</summary>
+            <p>
+              Escolha o que comparar. A <strong>renda por pessoa da casa</strong> divide tudo o que
+              a casa recebe pelos moradores e se compara com toda a população. A{' '}
+              <strong>renda do trabalho</strong> considera só o que você ganha trabalhando e se
+              compara com quem trabalha. Misturar as duas leva a conclusões erradas.
+            </p>
+            <p>
+              O IBGE publica limites de faixas, não a renda de cada pessoa. Por isso o resultado
+              indica uma faixa, e não uma posição exata.
+            </p>
+          </details>
         </div>
         <IncomeCalculator />
       </section>

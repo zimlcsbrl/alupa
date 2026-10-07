@@ -218,12 +218,24 @@ importers:
 
   apps/workers:
     dependencies:
+      '@alupa/connectors':
+        specifier: workspace:*
+        version: link:../../packages/connectors
       '@alupa/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@alupa/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@alupa/storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
       bullmq:
         specifier: ^5
         version: 5.81.5(supports-color@7.2.0)
+      drizzle-orm:
+        specifier: ^0.44
+        version: 0.44.7(postgres@3.4.9)
       ioredis:
         specifier: ^5
         version: 5.11.1(supports-color@7.2.0)
@@ -309,6 +321,21 @@ importers:
         version: 3.2.7(@types/node@24.19.1)(jiti@2.7.0)(lightningcss@1.32.0)(supports-color@7.2.0)(tsx@4.23.15)
 
   packages/domain:
+    devDependencies:
+      '@alupa/config':
+        specifier: workspace:*
+        version: link:../config
+      '@types/node':
+        specifier: ^24
+        version: 24.19.1
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      vitest:
+        specifier: ^3
+        version: 3.2.7(@types/node@24.19.1)(jiti@2.7.0)(lightningcss@1.32.0)(supports-color@7.2.0)(tsx@4.23.15)
+
+  packages/storage:
     devDependencies:
       '@alupa/config':
         specifier: workspace:*

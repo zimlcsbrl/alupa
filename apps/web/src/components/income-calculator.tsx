@@ -16,6 +16,8 @@ const reais = new Intl.NumberFormat('pt-BR', {
   maximumFractionDigits: 0,
 });
 const pct = (n: number) => `${n.toLocaleString('pt-BR')}%`;
+const pessoas = (n: number) =>
+  `${(n / 1_000_000).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} milhões`;
 
 function rotuloDaFaixa(faixa: FaixaDeRenda) {
   if (faixa.rendaMinima === null) return `Até ${reais.format(faixa.rendaMaxima!)}`;
@@ -42,8 +44,7 @@ export function IncomeCalculator() {
   const distribuicao = distribuicoesDeRenda[tipo];
   const faixas = faixasDeRenda(distribuicao.limites);
   const faixaDestacada = resultado?.tipo === tipo ? resultado.indice : null;
-  // Escala das barras: o maior limite publicado (P99). A faixa acima dele não tem teto.
-  const escala = Math.max(...distribuicao.limites.map((l) => l.limite));
+  const escala = Math.max(...Object.values(distribuicao.populacao.porInicioDaFaixa));
 
   function trocarTipo(novo: TipoDeRenda) {
     setTipo(novo);
@@ -90,7 +91,7 @@ export function IncomeCalculator() {
               />
               <span>
                 <strong>Renda por pessoa da casa</strong>
-                Toda a renda da casa dividida pelos moradores. Compara com toda a população.
+                Compara os moradores do Brasil.
               </span>
             </label>
             <label>
@@ -102,7 +103,7 @@ export function IncomeCalculator() {
               />
               <span>
                 <strong>Minha renda do trabalho</strong>
-                Só o que você recebe trabalhando. Compara com quem trabalha.
+                Compara ocupados com renda do trabalho.
               </span>
             </label>
           </fieldset>
@@ -118,7 +119,11 @@ export function IncomeCalculator() {
             autoComplete="off"
             placeholder="Ex.: 3.000"
             value={valor}
-            onChange={(e) => setValor(e.target.value)}
+            onChange={(e) => {
+              setValor(e.target.value);
+              setResultado(null);
+              setErro(null);
+            }}
             aria-describedby={`${id}-dica`}
             aria-invalid={erro !== null && lerValorEmReais(valor) === null}
           />
@@ -141,7 +146,11 @@ export function IncomeCalculator() {
                 max={30}
                 step={1}
                 value={moradores}
-                onChange={(e) => setMoradores(e.target.value)}
+                onChange={(e) => {
+                  setMoradores(e.target.value);
+                  setResultado(null);
+                  setErro(null);
+                }}
               />
             </>
           )}
@@ -171,6 +180,13 @@ export function IncomeCalculator() {
                 Você está <strong>{resultado.destaque}</strong>
                 {resultado.tipo === 'domiciliar' ? ' do Brasil.' : ' entre quem trabalha.'}
               </p>
+              <p className="result-population">
+                Cerca de{' '}
+                <strong>
+                  {pessoas(distribuicao.populacao.porInicioDaFaixa[resultado.faixa.de])} de pessoas
+                </strong>{' '}
+                estão nesta faixa de renda: {rotuloDaFaixa(resultado.faixa)}.
+              </p>
               <p>
                 {resultado.faixa.rendaMinima === null
                   ? `${pct(100 - resultado.faixa.ate)} das pessoas têm renda acima de ${reais.format(resultado.faixa.rendaMaxima!)}.`
@@ -187,24 +203,31 @@ export function IncomeCalculator() {
         <figcaption>
           <strong>Como a renda se distribui</strong>
           {tipo === 'domiciliar' ? ' · por pessoa da casa' : ' · do trabalho'} · {distribuicao.ano}
-          <span>
-            Cada linha reúne uma parcela das pessoas, da menor para a maior renda. A barra mostra
-            até quanto ganha quem está na faixa.
-          </span>
+          <span>As barras comparam quantas pessoas estão em cada faixa de renda mensal.</span>
         </figcaption>
         <ol>
           {faixas.map((faixa, indice) => (
             <li key={faixa.de} aria-current={indice === faixaDestacada ? 'true' : undefined}>
               <span className="band-label">{rotuloDaFaixa(faixa)}</span>
               <span className="band-share">
-                {pct(faixa.parcela)}
-                <span className="band-share-unit"> das pessoas</span>
+                <strong>≈ {pessoas(distribuicao.populacao.porInicioDaFaixa[faixa.de])}</strong>
+                <span>
+                  {pct(
+                    Number(
+                      (
+                        (distribuicao.populacao.porInicioDaFaixa[faixa.de] /
+                          distribuicao.populacao.total) *
+                        100
+                      ).toFixed(1),
+                    ),
+                  )}{' '}
+                  das pessoas
+                </span>
               </span>
               <span className="bar-track" aria-hidden="true">
                 <span
-                  className={faixa.rendaMaxima === null ? 'bar-open' : undefined}
                   style={{
-                    width: `${Math.max(1, ((faixa.rendaMaxima ?? escala) / escala) * 100)}%`,
+                    width: `${(distribuicao.populacao.porInicioDaFaixa[faixa.de] / escala) * 100}%`,
                   }}
                 />
               </span>
@@ -213,11 +236,23 @@ export function IncomeCalculator() {
           ))}
         </ol>
         <p className="data-note">
-          {distribuicao.universo} {distribuicao.conceito} Valores nominais de {distribuicao.ano};
-          rendas de hoje podem parecer um pouco mais altas por causa da inflação. Faixas definidas
-          pelos limites publicados pelo IBGE.{' '}
-          <a href={distribuicao.fonte.url}>{distribuicao.fonte.nome} ↗</a>
+          Base: cerca de {pessoas(distribuicao.populacao.total)} de pessoas em {distribuicao.ano}.
+          Quantidades estimadas pelo IBGE, arredondadas na exibição.{' '}
+          <a href={distribuicao.populacao.url}>
+            Pessoas por faixa · Tabela {distribuicao.populacao.tabela} ↗
+          </a>
         </p>
+        <details className="income-methodology">
+          <summary>Fonte e como interpretar</summary>
+          <p className="data-note">
+            {distribuicao.universo} {distribuicao.conceito} Valores nominais de {distribuicao.ano};
+            rendas de hoje podem parecer um pouco mais altas por causa da inflação. Faixas definidas
+            pelos limites publicados pelo IBGE.{' '}
+            <a href={distribuicao.fonte.url}>{distribuicao.fonte.nome} ↗</a>
+            As parcelas observadas podem diferir das classes teóricas de 5% ou 10% por empates de
+            renda e arredondamentos.
+          </p>
+        </details>
       </figure>
     </>
   );

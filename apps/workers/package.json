@@ -6,12 +6,17 @@
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=../../.env src/index.ts",
     "start": "tsx --env-file-if-exists=../../.env src/index.ts",
+    "pncp:contratacoes": "tsx --env-file-if-exists=../../.env src/cli/pncp-contratacoes.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@alupa/connectors": "workspace:*",
     "@alupa/db": "workspace:*",
+    "@alupa/domain": "workspace:*",
+    "@alupa/storage": "workspace:*",
     "bullmq": "^5",
+    "drizzle-orm": "^0.44",
     "ioredis": "^5",
     "pino": "^9"
   },

@@ -8,7 +8,7 @@ Rota: `/brasil-em-numeros`. Estrutura inicial implementada em 06/10/2026.
 - Distribuição urbana/rural, com valores textuais equivalentes ao gráfico.
 - Comparação de renda entre três UFs, explicitamente identificada como seleção.
 - Explicação de renda por pessoa e das limitações da média.
-- Prévia desabilitada da calculadora, sem cálculo, envio ou armazenamento de renda.
+- Calculadora de renda local no navegador, com limites da PNAD 2025, resultado por faixa e quantidade estimada de pessoas.
 - Espaço para idade, sexo, cor ou raça, território, trabalho, educação e moradia.
 - Fontes acessíveis e ano de referência junto aos indicadores.
 
@@ -20,7 +20,18 @@ Cada indicador deverá guardar: identificador, conceito, valor, unidade, popula�
 
 Distribuições futuras: faixas etárias; sexo; cor ou raça conforme autodeclaração e categorias da fonte; grandes regiões, UFs e municípios; escolaridade, ocupação e saneamento. Cada visual precisa de alternativa textual ou tabular e indicação dos limites de cobertura.
 
-## Calculadora de posição na distribuição de renda — futura
+## Calculadora de posição na distribuição de renda — critérios
+
+### Quantidade de pessoas e apresentação
+
+O formulário e o gráfico ficam lado a lado no desktop e empilhados no celular. As barras representam a quantidade de pessoas, em escala proporcional à maior faixa, e não o limite de renda. O resultado identifica a faixa selecionada e a quantidade estimada de pessoas nela, sem confundir esse grupo com o percentual acumulado de maior ou menor renda.
+
+Contagens de 2025 conferidas na API do IBGE em 06/10/2026:
+
+- Renda domiciliar: [tabela 7521](https://sidra.ibge.gov.br/tabela/7521), variável 606, classificação 1019. Total: 212.624 mil pessoas.
+- Renda do trabalho: [tabela 7537](https://sidra.ibge.gov.br/tabela/7537), variável 10844, classificação 1043. Total: 101.627 mil pessoas ocupadas de 14 anos ou mais com rendimento do trabalho.
+
+As séries da API são convertidas de mil pessoas para pessoas em `distribuicao-renda.ts`. Cada classe simples é vinculada pelo percentil inicial; não incluir classes acumuladas na soma. Os percentuais exibidos são contagem da faixa / total, arredondados para uma casa decimal. As estimativas publicadas podem diferir dos percentuais teóricos dos grupos devido a empates e arredondamentos. As somas arredondadas podem diferir ligeiramente do total publicado. A troca de modalidade usa a população correspondente; editar os campos remove o resultado anterior.
 
 Pergunta: “Com renda de X por mês, qual é minha posição na distribuição?”
 

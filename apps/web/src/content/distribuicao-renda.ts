@@ -15,6 +15,13 @@ export interface DistribuicaoDeRenda {
   conceito: string;
   fonte: { nome: string; tabela: number; url: string };
   limites: LimitePercentil[];
+  /** Estimativas da PNAD em pessoas (a API publica em mil pessoas), mesmo ano dos limites. */
+  populacao: {
+    total: number;
+    porInicioDaFaixa: Record<number, number>;
+    tabela: number;
+    url: string;
+  };
 }
 
 const sidra = (tabela: number) => `https://sidra.ibge.gov.br/tabela/${tabela}`;
@@ -27,6 +34,26 @@ export const distribuicoesDeRenda: Record<TipoDeRenda, DistribuicaoDeRenda> = {
     conceito:
       'Rendimento domiciliar per capita: soma dos rendimentos de todas as fontes dos moradores, dividida pelo número de moradores.',
     fonte: { nome: 'IBGE · PNAD Contínua 2025 · Tabela 7438', tabela: 7438, url: sidra(7438) },
+    populacao: {
+      total: 212624000,
+      tabela: 7521,
+      url: sidra(7521),
+      porInicioDaFaixa: {
+        0: 10789000,
+        5: 10513000,
+        10: 21227000,
+        20: 21276000,
+        30: 21223000,
+        40: 21397000,
+        50: 21139000,
+        60: 21271000,
+        70: 21242000,
+        80: 21280000,
+        90: 10634000,
+        95: 8503000,
+        99: 2128000,
+      },
+    },
     limites: [
       { percentual: 5, limite: 299 },
       { percentual: 10, limite: 451 },
@@ -50,6 +77,26 @@ export const distribuicoesDeRenda: Record<TipoDeRenda, DistribuicaoDeRenda> = {
     conceito:
       'Rendimento habitualmente recebido em todos os trabalhos. Não inclui aposentadorias, aluguéis, programas sociais ou outras fontes.',
     fonte: { nome: 'IBGE · PNAD Contínua 2025 · Tabela 7536', tabela: 7536, url: sidra(7536) },
+    populacao: {
+      total: 101627000,
+      tabela: 7537,
+      url: sidra(7537),
+      porInicioDaFaixa: {
+        0: 5049000,
+        5: 5088000,
+        10: 10213000,
+        20: 10174000,
+        30: 10073000,
+        40: 10702000,
+        50: 9340000,
+        60: 10497000,
+        70: 10172000,
+        80: 10143000,
+        90: 5078000,
+        95: 4077000,
+        99: 1019000,
+      },
+    },
     limites: [
       { percentual: 5, limite: 498 },
       { percentual: 10, limite: 801 },
