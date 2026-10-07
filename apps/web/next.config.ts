@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
   // Build autocontido para container (Coolify/Docker); a raiz do monorepo entra no tracing.
   output: 'standalone',
   outputFileTracingRoot: path.join(import.meta.dirname, '../../'),
+  // Pacotes do monorepo publicados como TypeScript, sem build próprio.
+  transpilePackages: ['@alupa/domain'],
   poweredByHeader: false,
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];

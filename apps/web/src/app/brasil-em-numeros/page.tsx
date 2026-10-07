@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { IncomeCalculator } from '@/components/income-calculator';
+import { distribuicoesDeRenda } from '@/content/distribuicao-renda';
 import {
   brazilIndicators,
   brazilSources,
@@ -36,15 +38,16 @@ export default function BrasilEmNumeros() {
           média.
         </p>
         <p className="data-note">
-          Panorama inicial · Censo 2022 e renda de 2024. Cada indicador tem seu próprio período de
-          referência; estes números não são estimativas para 2026.
+          Panorama inicial · Censo 2022, renda de 2024 e calculadora com a PNAD Contínua 2025. Cada
+          indicador tem seu próprio período de referência; estes números não são estimativas para
+          2026.
         </p>
       </header>
       <nav className="section-nav" aria-label="Seções de Brasil em números">
         <a href="#panorama">Panorama</a>
         <a href="#populacao">População</a>
         <a href="#renda">Renda</a>
-        <a href="#calculadora">Calculadora futura</a>
+        <a href="#calculadora">Calculadora</a>
         <a href="#fontes">Fontes</a>
       </nav>
       <section id="panorama" aria-label="Indicadores do Brasil" className="stat-grid">
@@ -156,13 +159,13 @@ export default function BrasilEmNumeros() {
               A média não indica quanto a maioria recebe e não permite descobrir, sozinha, a posição
               de uma pessoa na distribuição de renda.
             </p>
-            <a href="#calculadora">Entenda a futura calculadora ↓</a>
+            <a href="#calculadora">Veja onde sua renda se encaixa ↓</a>
           </aside>
         </div>
       </section>
       <section id="calculadora" className="calculator-section">
         <div>
-          <span className="tag">Em planejamento</span>
+          <span className="tag">Dados de 2025</span>
           <p className="eyebrow">03 / SUA RENDA EM PERSPECTIVA</p>
           <h2>
             Onde minha renda
@@ -170,34 +173,21 @@ export default function BrasilEmNumeros() {
             entra nessa história?
           </h2>
           <p>
-            A futura calculadora vai ajudar a responder: “Com essa renda mensal, estou entre quais
-            faixas da população?”
+            Responda: “Com essa renda mensal, estou entre quais faixas da população?” A comparação
+            usa a distribuição de renda publicada pelo IBGE.
           </p>
           <p>
-            Você poderá comparar sua renda individual ou a renda por pessoa da casa, com o universo
-            e o ano da comparação sempre identificados.
+            Escolha o que comparar. A <strong>renda por pessoa da casa</strong> divide tudo o que a
+            casa recebe pelos moradores e se compara com toda a população. A{' '}
+            <strong>renda do trabalho</strong> considera só o que você ganha trabalhando e se
+            compara com quem trabalha. Misturar as duas leva a conclusões erradas.
+          </p>
+          <p>
+            O IBGE publica limites de faixas, não a renda de cada pessoa. Por isso o resultado
+            indica uma faixa, e não uma posição exata.
           </p>
         </div>
-        <div className="calculator-preview">
-          <h3>Uma comparação com contexto</h3>
-          <fieldset disabled aria-describedby="calculator-status">
-            <legend>Prévia da calculadora</legend>
-            <label htmlFor="income-kind">O que você quer comparar?</label>
-            <select id="income-kind" defaultValue="household">
-              <option value="household">Renda mensal por pessoa da casa</option>
-              <option value="individual">Renda individual do trabalho</option>
-            </select>
-            <label htmlFor="monthly-income">Renda mensal em reais</label>
-            <input id="monthly-income" type="text" placeholder="Ex.: R$ 3.000" />
-            <button className="button" type="button">
-              Calculadora em breve
-            </button>
-          </fieldset>
-          <p id="calculator-status" className="data-note">
-            Ainda indisponível. O cálculo depende de uma distribuição de renda validada. Nenhum
-            valor é coletado nesta prévia.
-          </p>
-        </div>
+        <IncomeCalculator />
       </section>
       <section className="data-section" aria-labelledby="next-topics">
         <div className="section-heading">
@@ -233,6 +223,16 @@ export default function BrasilEmNumeros() {
           <li>
             <a href={brazilSources.income.url}>
               PNAD Contínua 2024 · rendimento domiciliar per capita ↗
+            </a>
+          </li>
+          <li>
+            <a href={distribuicoesDeRenda.domiciliar.fonte.url}>
+              PNAD Contínua 2025 · Tabela 7438 · faixas da renda por pessoa da casa ↗
+            </a>
+          </li>
+          <li>
+            <a href={distribuicoesDeRenda.individual.fonte.url}>
+              PNAD Contínua 2025 · Tabela 7536 · faixas da renda do trabalho ↗
             </a>
           </li>
           <li>

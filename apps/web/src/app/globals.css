@@ -335,8 +335,9 @@ h3 {
 }
 .reading-layout {
   display: grid;
-  grid-template-columns: 250px minmax(0, 740px);
-  gap: 64px;
+  grid-template-columns: 220px minmax(0, 700px);
+  align-items: start;
+  gap: 48px;
   border-top: 1px solid var(--line);
   padding-top: 36px;
 }
@@ -363,15 +364,17 @@ h3 {
 }
 .prose {
   min-width: 0;
-  max-width: 740px;
+  max-width: 700px;
+  line-height: 1.75;
+  text-align: start;
   overflow-wrap: anywhere;
 }
 .prose:only-child {
   grid-column: 1 / -1;
 }
 .prose section {
-  padding-bottom: 26px;
-  margin-bottom: 26px;
+  padding-bottom: 32px;
+  margin-bottom: 32px;
   border-bottom: 1px solid var(--line);
   scroll-margin-top: 28px;
 }
@@ -386,12 +389,31 @@ h3 {
   font-size: 19px;
   margin: 26px 0 12px;
 }
+.prose p {
+  margin-block: 0 20px;
+}
+.prose ul,
+.prose ol {
+  padding-inline-start: 1.4em;
+  margin-block: 20px 24px;
+  list-style-position: outside;
+}
 .prose ul {
-  padding-left: 22px;
-  margin-block: 16px;
+  list-style-type: disc;
+}
+.prose ol {
+  list-style-type: decimal;
 }
 .prose li {
-  margin-block: 10px;
+  padding-inline-start: 0.3em;
+  margin-block: 12px;
+}
+.prose li:first-child {
+  margin-top: 0;
+}
+.prose li:last-child,
+.prose section > :last-child {
+  margin-bottom: 0;
 }
 .prose li::marker {
   color: var(--green);
@@ -656,6 +678,186 @@ h3 {
   cursor: not-allowed;
 }
 .calculator-preview .data-note {
+  font-size: 12px;
+}
+.calculator-tool {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+  min-width: 0;
+}
+.calculator-tool form,
+.calculator-result:not(:empty),
+.income-distribution {
+  background: var(--surface);
+  border: 1px solid #d8dfd0;
+  border-radius: 8px;
+  padding: 24px;
+}
+.calculator-tool form > label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 18px 0 8px;
+}
+.calculator-tool input:not([type='radio']) {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px;
+  border: 1px solid #b9c1b4;
+  border-radius: 5px;
+  background: #fff;
+  color: var(--foreground);
+  font-size: 16px;
+}
+.calculator-tool input[aria-invalid='true'] {
+  border-color: #a33a2b;
+}
+.calculator-tool .field-hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 8px 0 0;
+}
+.calculator-tool .button {
+  width: 100%;
+  justify-content: center;
+  margin: 22px 0 12px;
+  min-height: 48px;
+  border: 0;
+  cursor: pointer;
+}
+.choice-group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+.choice-group legend {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.choice-group label {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.choice-group label:has(input:checked) {
+  border-color: var(--green);
+  background: #f1f4ec;
+}
+.choice-group input {
+  margin-top: 3px;
+  accent-color: var(--green);
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.choice-group strong {
+  display: block;
+  font-size: 15px;
+  color: var(--foreground);
+}
+.calculator-result .result-headline {
+  font-size: 22px;
+  line-height: 1.35;
+  color: var(--foreground);
+  margin-bottom: 12px;
+}
+.calculator-result .result-headline strong {
+  color: var(--green);
+  background: linear-gradient(transparent 62%, #f3e4b1 62%);
+}
+.calculator-result .per-capita {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.calculator-result p:last-child {
+  margin-bottom: 0;
+}
+.form-error {
+  color: #a33a2b;
+  font-weight: 700;
+}
+.income-distribution {
+  margin: 0;
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+.income-distribution figcaption span {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+}
+.income-distribution .bar-track .bar-open {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--green) 0 8px,
+    #4f7d69 8px 16px
+  );
+}
+.income-distribution figcaption {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.income-distribution figcaption strong {
+  color: var(--foreground);
+}
+.income-distribution ol {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: grid;
+  gap: 4px;
+}
+.income-distribution li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 12px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+.income-distribution li[aria-current='true'] {
+  background: #f3e4b1;
+  font-weight: 700;
+}
+.income-distribution .band-label {
+  white-space: nowrap;
+}
+.income-distribution .band-share {
+  color: var(--muted);
+  text-align: right;
+}
+@media (max-width: 600px) {
+  /* Mantém "das pessoas" para leitores de tela, sem ocupar espaço no celular. */
+  .income-distribution .band-share-unit {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+.income-distribution .bar-track {
+  grid-column: 1 / -1;
+  height: 8px;
+}
+.income-distribution .band-you {
+  grid-column: 1 / -1;
+  color: var(--green);
   font-size: 12px;
 }
 .topic-card .tag {
