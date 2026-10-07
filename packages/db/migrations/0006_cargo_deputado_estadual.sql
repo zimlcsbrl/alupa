@@ -1,0 +1,1 @@
+ALTER TYPE "core"."cargo" ADD VALUE 'deputado_estadual';

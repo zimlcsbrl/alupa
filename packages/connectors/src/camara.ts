@@ -44,3 +44,20 @@ export async function legislatura(id: number) {
   const { dados } = await buscarJson(`${BASE}/legislaturas/${id}`, legislaturaSchema);
   return { id: dados.id, inicio: dados.dataInicio, fim: dados.dataFim };
 }
+
+const detalheSchema = z.object({
+  dados: z.object({
+    id: z.number().int(),
+    cpf: z.string().nullish(),
+    nomeCivil: z.string().nullish(),
+  }),
+});
+
+/**
+ * CPF e nome civil de um deputado, publicados pela Câmara.
+ * Use o CPF só para gerar a chave de identidade; não o armazene.
+ */
+export async function identificacaoDoDeputado(id: number) {
+  const { dados } = await buscarJson(urlApiDeputado(id), detalheSchema);
+  return { cpf: dados.cpf ?? null, nomeCivil: dados.nomeCivil ?? null };
+}

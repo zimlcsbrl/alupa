@@ -1,0 +1,75 @@
+{
+  "$comentario": "Vínculos entre registros de fontes sem CPF e pessoas já conhecidas. Só valem com \"confirmado\": true, preenchendo revisadoPor e revisadoEm. Reimporte a fonte depois de confirmar (ex.: pnpm --filter @alupa/workers alerj).",
+  "vinculos": [
+    {
+      "fonte": "alerj",
+      "idNaFonte": "344",
+      "nomeNaFonte": "RAFAEL PICCIANI",
+      "pessoa": "rafael-picciani-rj",
+      "justificativa": "Sugestão automática: candidato a deputado estadual RJ em 2022 (urna \"RAFAEL\", suplente) e em 2026 (urna \"RAFAEL PICCIANI\"), mesma pessoa no TSE.",
+      "confirmado": false,
+      "revisadoPor": null,
+      "revisadoEm": null
+    },
+    {
+      "fonte": "alerj",
+      "idNaFonte": "384",
+      "nomeNaFonte": "FILIPE SOARES",
+      "pessoa": "filipe-rr-soares-rj",
+      "justificativa": "Sugestão automática: eleito deputado estadual RJ em 2022 com urna \"FILIPE RR SOARES\".",
+      "confirmado": false,
+      "revisadoPor": null,
+      "revisadoEm": null
+    },
+    {
+      "fonte": "alerj",
+      "idNaFonte": "390",
+      "nomeNaFonte": "MARTHA ROCHA",
+      "pessoa": "delegada-martha-rocha-rj",
+      "justificativa": "Sugestão automática: eleita deputada estadual RJ em 2022 com urna \"DELEGADA MARTHA ROCHA\".",
+      "confirmado": false,
+      "revisadoPor": null,
+      "revisadoEm": null
+    },
+    {
+      "fonte": "alerj",
+      "idNaFonte": "476",
+      "nomeNaFonte": "JARI OLIVEIRA",
+      "pessoa": "jari-rj",
+      "justificativa": "Sugestão automática: eleito deputado estadual RJ em 2022 e 2026 com urna \"JARI\".",
+      "confirmado": false,
+      "revisadoPor": null,
+      "revisadoEm": null
+    },
+    {
+      "fonte": "alerj",
+      "idNaFonte": "479",
+      "nomeNaFonte": "GUILHERME DELAROLI",
+      "pessoa": "guilherme-delaroli-rj",
+      "justificativa": "Sugestão automática: eleito deputado estadual RJ em 2022 (urna \"DELAROLI\") e 2026 (urna \"GUILHERME DELAROLI\").",
+      "confirmado": false,
+      "revisadoPor": null,
+      "revisadoEm": null
+    },
+    {
+      "fonte": "alerj",
+      "idNaFonte": "503",
+      "nomeNaFonte": "YURI MOURA",
+      "pessoa": "yuri-moura-rj",
+      "justificativa": "Sugestão automática: eleito deputado estadual RJ em 2022 (urna \"YURI\") e 2026 (urna \"YURI MOURA\").",
+      "confirmado": false,
+      "revisadoPor": null,
+      "revisadoEm": null
+    },
+    {
+      "fonte": "alerj",
+      "idNaFonte": "504",
+      "nomeNaFonte": "FRED PACHECO",
+      "pessoa": "fred-pacheco-rj",
+      "justificativa": "Sugestão automática: eleito deputado estadual RJ em 2022 com urna \"FRED PACHECO BANDA DOM\". Atenção: em 2026 há também um \"FRED ROCHA\"; conferir.",
+      "confirmado": false,
+      "revisadoPor": null,
+      "revisadoEm": null
+    }
+  ]
+}

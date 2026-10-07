@@ -39,3 +39,35 @@ export function normalizarCnpj(texto: string): string | null {
   const d2 = digito(cnpj.slice(0, 12) + d1);
   return cnpj.endsWith(`${d1}${d2}`) ? cnpj : null;
 }
+
+/** Nome para comparação entre fontes: maiúsculas, sem acentos, pontuação ou espaços extras. */
+export function normalizarNome(nome: string): string {
+  return semAcentos(nome)
+    .toUpperCase()
+    .replace(/[^A-Z ]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Dígitos verificadores de um CNPJ a partir dos 12 primeiros dígitos. */
+function digitosCnpj(base12: string): string {
+  const dv = (base: string) => {
+    let peso = base.length - 7;
+    let soma = 0;
+    for (const c of base) {
+      soma += Number(c) * peso--;
+      if (peso < 2) peso = 9;
+    }
+    const resto = soma % 11;
+    return resto < 2 ? 0 : 11 - resto;
+  };
+  const d1 = dv(base12);
+  return `${d1}${dv(base12 + d1)}`;
+}
+
+/** CNPJ completo da matriz (ordem 0001) a partir dos 8 dígitos-base. */
+export function cnpjDaMatriz(cnpjBasico: string): string | null {
+  if (!/^\d{8}$/.test(cnpjBasico)) return null;
+  const base = `${cnpjBasico}0001`;
+  return base + digitosCnpj(base);
+}

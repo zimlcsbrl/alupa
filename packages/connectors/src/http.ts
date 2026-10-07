@@ -123,3 +123,40 @@ export async function buscarJson<T extends z.ZodType>(
 ): Promise<z.infer<T>> {
   return validarJson(await buscar(url, opcoes), schema);
 }
+
+/** Download binário (arquivos ZIP, PDFs), com as mesmas regras de novas tentativas de `buscar`. */
+export async function baixar(
+  url: string,
+  { tentativas = 4, timeoutMs = 300_000 }: OpcoesHttp = {},
+): Promise<{
+  url: string;
+  bytes: Uint8Array;
+  contentType: string | null;
+  ultimaModificacao: string | null;
+}> {
+  for (let tentativa = 1; ; tentativa++) {
+    try {
+      const resposta = await fetch(url, {
+        headers: { 'user-agent': 'A Lupa (https://alupa.app)' },
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+      if (!resposta.ok) {
+        throw new ErroFonte(
+          `HTTP ${resposta.status}`,
+          url,
+          resposta.status,
+          resposta.status < 500 && resposta.status !== 429,
+        );
+      }
+      return {
+        url,
+        bytes: new Uint8Array(await resposta.arrayBuffer()),
+        contentType: resposta.headers.get('content-type'),
+        ultimaModificacao: resposta.headers.get('last-modified'),
+      };
+    } catch (erro) {
+      if ((erro instanceof ErroFonte && erro.definitivo) || tentativa >= tentativas) throw erro;
+      await espera(2000 * 2 ** (tentativa - 1));
+    }
+  }
+}

@@ -80,6 +80,25 @@ export const organizacao = core.table(
     razaoSocial: text().notNull(),
     nomeFantasia: text(),
     slug: text().notNull().unique(),
+    // Cadastro da Receita Federal (dados abertos do CNPJ), quando já enriquecido.
+    naturezaJuridicaCodigo: integer(),
+    naturezaJuridica: text(),
+    capitalSocial: numeric({ precision: 18, scale: 2 }),
+    porte: text(),
+    situacaoCadastral: text(),
+    situacaoCadastralEm: date(),
+    inicioAtividade: date(),
+    cnaePrincipal: text(),
+    cnaePrincipalDescricao: text(),
+    /** Endereço da matriz. Para empresário individual/MEI fica nulo: tende a ser residencial. */
+    endereco: text(),
+    cep: text(),
+    municipioNome: text(),
+    siglaUf: text(),
+    /** True quando o endereço foi omitido para proteger a residência do titular. */
+    enderecoProtegido: boolean().notNull().default(false),
+    /** Mês do arquivo da Receita usado, ex.: "2026-09". */
+    referenciaReceita: text(),
     criadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
     atualizadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
@@ -199,7 +218,7 @@ export const contratacao = core.table(
   ],
 );
 
-export const cargo = core.enum('cargo', ['deputado_federal', 'senador']);
+export const cargo = core.enum('cargo', ['deputado_federal', 'senador', 'deputado_estadual']);
 
 export const tipoContato = core.enum('tipo_contato', [
   'gabinete',
@@ -295,5 +314,158 @@ export const contatoPublico = core.table(
     unique().on(t.entidadeTipo, t.entidadeId, t.canal, t.valor),
     index().on(t.entidadeTipo, t.entidadeId),
     check('contato_entidade_tipo', sql`${t.entidadeTipo} IN ('pessoa', 'orgao')`),
+  ],
+);
+
+/**
+ * Candidatura registrada no TSE. Uma pessoa tem uma candidatura por eleição;
+ * a ligação entre anos usa a chave de identidade (HMAC do CPF), nunca o CPF.
+ */
+export const candidatura = core.table(
+  'candidatura',
+  {
+    id: uuid()
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    pessoaId: uuid()
+      .notNull()
+      .references(() => pessoa.id),
+    ano: integer().notNull(),
+    /** Sequencial do candidato no TSE (SQ_CANDIDATO), único por eleição. */
+    sqCandidato: text().notNull(),
+    codigoEleicao: text().notNull(),
+    turno: integer(),
+    cargo: text().notNull(),
+    codigoCargo: integer().notNull(),
+    siglaUf: text().notNull(),
+    /** Unidade eleitoral: UF, "BR" ou código TSE do município. */
+    unidadeEleitoral: text().notNull(),
+    unidadeEleitoralNome: text(),
+    numero: text(),
+    nomeUrna: text().notNull(),
+    partido: text(),
+    ocupacao: text(),
+    situacaoCandidatura: text(),
+    resultado: text(),
+    /** Total declarado, calculado na importação a partir dos bens. */
+    totalBensDeclarados: reais(),
+    quantidadeBens: integer().notNull().default(0),
+    fonteUrl: text().notNull(),
+    geradoNaFonteEm: text(),
+    criadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    atualizadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique('candidatura_tse_unica').on(t.ano, t.sqCandidato),
+    index().on(t.pessoaId, t.ano),
+    index().on(t.ano, t.codigoCargo, t.siglaUf),
+  ],
+);
+
+/** Bem declarado à Justiça Eleitoral, como publicado pelo TSE (valor informado pelo candidato). */
+export const bemDeclarado = core.table(
+  'bem_declarado',
+  {
+    id: uuid()
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    candidaturaId: uuid()
+      .notNull()
+      .references(() => candidatura.id, { onDelete: 'cascade' }),
+    ordem: integer().notNull(),
+    codigoTipo: integer(),
+    tipo: text().notNull(),
+    descricao: text(),
+    valor: reais().notNull(),
+    atualizadoNaFonteEm: text(),
+  },
+  (t) => [unique('bem_declarado_ordem').on(t.candidaturaId, t.ordem)],
+);
+
+export const situacaoEditorial = core.enum('situacao_editorial', [
+  'rascunho',
+  'publicado',
+  'retirado',
+]);
+
+/**
+ * Matéria de imprensa sobre um ou mais políticos, selecionada pela equipe editorial.
+ * Guarda só referência (título, veículo, data, link) e resumo próprio: nunca o texto da matéria.
+ */
+export const materiaImprensa = core.table(
+  'materia_imprensa',
+  {
+    id: uuid()
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    url: text().notNull().unique(),
+    titulo: text().notNull(),
+    veiculo: text().notNull(),
+    publicadaEm: date().notNull(),
+    /** Resumo escrito pela equipe, com as palavras da A Lupa. */
+    resumo: text(),
+    situacao: situacaoEditorial().notNull().default('rascunho'),
+    /** Arquivo de origem no repositório, para rastrear quem incluiu e quando. */
+    origem: text(),
+    criadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    atualizadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index().on(t.situacao, t.publicadaEm)],
+);
+
+export const materiaPessoa = core.table(
+  'materia_pessoa',
+  {
+    materiaId: uuid()
+      .notNull()
+      .references(() => materiaImprensa.id, { onDelete: 'cascade' }),
+    pessoaId: uuid()
+      .notNull()
+      .references(() => pessoa.id),
+  },
+  (t) => [unique('materia_pessoa_unica').on(t.materiaId, t.pessoaId), index().on(t.pessoaId)],
+);
+
+export const confiancaVinculo = core.enum('confianca_vinculo', ['confirmada', 'possivel']);
+
+/**
+ * Participação de uma pessoa no quadro de sócios de uma empresa, segundo a Receita Federal.
+ * A base aberta traz só nome e os 6 dígitos do meio do CPF: a ligação é "possível" até ser
+ * confirmada por outra fonte. Uma linha por mês de referência (a base é uma foto mensal).
+ */
+export const participacaoSocietaria = core.table(
+  'participacao_societaria',
+  {
+    id: uuid()
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    pessoaId: uuid()
+      .notNull()
+      .references(() => pessoa.id),
+    /** 8 primeiros dígitos do CNPJ (a empresa, sem distinguir filiais). */
+    cnpjBasico: text().notNull(),
+    razaoSocial: text(),
+    /** Empresa já enriquecida com o cadastro da Receita. */
+    organizacaoId: uuid().references(() => organizacao.id),
+    /** Nome do sócio exatamente como consta na Receita. */
+    nomeNaFonte: text().notNull(),
+    /** "***456789**", como publicado. */
+    cpfParcial: text().notNull(),
+    qualificacaoCodigo: integer().notNull(),
+    qualificacao: text(),
+    entradaEm: date(),
+    faixaEtaria: integer(),
+    metodo: text().notNull(),
+    confianca: confiancaVinculo().notNull().default('possivel'),
+    /** Mês do arquivo da Receita, ex.: "2026-09". */
+    referencia: text().notNull(),
+    documentoOriginalId: uuid().references(() => documentoOriginal.id),
+    criadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    atualizadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique('participacao_unica').on(t.pessoaId, t.cnpjBasico, t.qualificacaoCodigo, t.referencia),
+    index().on(t.cnpjBasico),
+    index().on(t.pessoaId),
   ],
 );

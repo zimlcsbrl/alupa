@@ -20,17 +20,19 @@ export const contactEmail = 'contato@alupa.app';
 export const isIndexable = process.env.ALUPA_INDEXAR === 'true';
 
 export const mainNav = [
-  { href: '/politicos', label: 'Políticos' },
-  { href: '/orgaos', label: 'Órgãos' },
   { href: '/brasil-em-numeros', label: 'Brasil em números' },
+  { href: '/politicos', label: 'Políticos' },
+  { href: '/eleicoes', label: 'Eleições' },
+  { href: '/orgaos', label: 'Órgãos' },
   { href: '/sobre', label: 'Sobre' },
   { href: '/manifesto', label: 'Manifesto' },
 ];
 
 export const footerNav = [
-  { href: '/politicos', label: 'Políticos' },
-  { href: '/orgaos', label: 'Órgãos' },
   { href: '/brasil-em-numeros', label: 'Brasil em números' },
+  { href: '/politicos', label: 'Políticos' },
+  { href: '/eleicoes', label: 'Eleições' },
+  { href: '/orgaos', label: 'Órgãos' },
   { href: '/sobre', label: 'Sobre' },
   { href: '/manifesto', label: 'Manifesto' },
   { href: '/sobre#contato', label: 'Contato' },

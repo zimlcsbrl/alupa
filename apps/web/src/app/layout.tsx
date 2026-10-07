@@ -45,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Pular para o conteúdo
         </a>
         <header className="site-header">
-          <Link href="/" aria-label="A Lupa — início">
+          <Link className="site-brand" href="/" aria-label="A Lupa — início">
             <Image src="/brand/logo.svg" alt="A Lupa" width={195} height={50} priority />
           </Link>
           <SiteNav />

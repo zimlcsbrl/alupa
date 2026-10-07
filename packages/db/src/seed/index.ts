@@ -22,6 +22,16 @@ const fontes = [
     urlDocumentacao: 'https://www12.senado.leg.br/dados-abertos',
   },
   {
+    codigo: 'receita-cnpj',
+    nome: 'Receita Federal — Dados abertos do CNPJ',
+    urlDocumentacao: 'https://www.gov.br/receitafederal/dados',
+  },
+  {
+    codigo: 'tse',
+    nome: 'Tribunal Superior Eleitoral — Dados Abertos',
+    urlDocumentacao: 'https://dadosabertos.tse.jus.br',
+  },
+  {
     codigo: 'ibge-localidades',
     nome: 'IBGE — API de Localidades',
     urlDocumentacao: 'https://servicodados.ibge.gov.br/api/docs/localidades',

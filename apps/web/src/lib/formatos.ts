@@ -52,8 +52,29 @@ export const PODERES: Record<string, string> = {
 
 export const CARGOS: Record<string, string> = {
   deputado_federal: 'Deputado(a) federal',
+  deputado_estadual: 'Deputado(a) estadual',
   senador: 'Senador(a)',
 };
+
+/** "DEPUTADO ESTADUAL" (TSE) → "Deputado estadual". */
+export const cargoTse = (cargo: string) => cargo.charAt(0) + cargo.slice(1).toLowerCase();
+
+/** "ELEITO POR QP" → "Eleito por QP"; mantém siglas do TSE. */
+export const resultadoTse = (r: string | null) =>
+  r
+    ? r.charAt(0) +
+      r
+        .slice(1)
+        .toLowerCase()
+        .replace(/\bqp\b/, 'QP')
+    : 'Resultado não informado';
+
+const reaisInteiros = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+  maximumFractionDigits: 0,
+});
+export const emReaisInteiros = (v: number) => reaisInteiros.format(v);
 
 /** Página, limitada para evitar varredura completa por paginação (ver plano, Parte 6). */
 export function lerPagina(valor: string | string[] | undefined, maximo = 20) {

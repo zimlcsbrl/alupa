@@ -1,0 +1,4 @@
+{
+  "$comentario": "Veículos aceitos na seção Imprensa. Decisão editorial: inclua nome e domínios (sem 'www.'). Exemplo de item: { \"nome\": \"Nome do Veículo\", \"dominios\": [\"veiculo.com.br\"] }",
+  "veiculos": []
+}

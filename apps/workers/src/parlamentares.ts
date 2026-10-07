@@ -2,6 +2,7 @@ import { camara, senado } from '@alupa/connectors';
 import type { Database } from '@alupa/db';
 import { schema } from '@alupa/db';
 import { slugify } from '@alupa/domain';
+import { chaveDeIdentidade } from '@alupa/domain/identidade';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 
 const { contatoPublico, enteFederativo, identificadorExterno, mandato, pessoa } = schema;
@@ -144,14 +145,12 @@ export async function importarParlamentares(db: Database) {
           .values({ nome: p.nome, nomeCompleto: p.nomeCompleto, slug, fotoUrl: p.fotoUrl })
           .returning({ id: pessoa.id });
         pessoaId = nova!.id;
-        await tx
-          .insert(identificadorExterno)
-          .values({
-            sistema: p.sistema,
-            valor: p.codigo,
-            entidadeTipo: 'pessoa',
-            entidadeId: pessoaId,
-          });
+        await tx.insert(identificadorExterno).values({
+          sistema: p.sistema,
+          valor: p.codigo,
+          entidadeTipo: 'pessoa',
+          entidadeId: pessoaId,
+        });
         novos++;
       }
 
@@ -227,4 +226,49 @@ export async function importarParlamentares(db: Database) {
       novos,
     };
   });
+}
+
+/**
+ * Registra a chave de identidade (HMAC do CPF) dos deputados, para que candidaturas do TSE
+ * sejam ligadas à mesma pessoa. O CPF não é gravado.
+ */
+export async function vincularIdentidadeDeputados(db: Database, segredo: string) {
+  const deputados = await db
+    .select({ pessoaId: identificadorExterno.entidadeId, codigo: identificadorExterno.valor })
+    .from(identificadorExterno)
+    .where(
+      and(
+        eq(identificadorExterno.entidadeTipo, 'pessoa'),
+        eq(identificadorExterno.sistema, 'camara'),
+        sql`NOT EXISTS (SELECT 1 FROM core.identificador_externo i
+          WHERE i.entidade_tipo = 'pessoa' AND i.sistema = 'cpf_hmac'
+          AND i.entidade_id = ${identificadorExterno.entidadeId})`,
+      ),
+    );
+
+  let vinculados = 0;
+  const fila = [...deputados];
+  async function trabalhador() {
+    for (let d = fila.shift(); d; d = fila.shift()) {
+      const { cpf, nomeCivil } = await camara.identificacaoDoDeputado(Number(d.codigo));
+      const chave = chaveDeIdentidade(cpf, segredo);
+      if (nomeCivil) {
+        await db.update(pessoa).set({ nomeCompleto: nomeCivil }).where(eq(pessoa.id, d.pessoaId));
+      }
+      if (!chave) continue;
+      await db
+        .insert(identificadorExterno)
+        .values({
+          sistema: 'cpf_hmac',
+          valor: chave,
+          entidadeTipo: 'pessoa',
+          entidadeId: d.pessoaId,
+        })
+        .onConflictDoNothing();
+      vinculados++;
+    }
+  }
+  // Quatro requisições simultâneas: rápido sem sobrecarregar a API da Câmara.
+  await Promise.all(Array.from({ length: 4 }, trabalhador));
+  return { pendentes: deputados.length, vinculados };
 }

@@ -1,5 +1,7 @@
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { once } from 'node:events';
+import { createWriteStream } from 'node:fs';
+import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 /** Original guardado: onde está, como verificar e quanto ocupa. */
@@ -11,6 +13,14 @@ export interface ObjetoGuardado {
 }
 
 export interface Armazenamento {
+  /** Guarda um arquivo grande lido em fluxo, sem carregá-lo inteiro na memória. */
+  guardarFluxo(
+    chave: string,
+    fluxo: AsyncIterable<Uint8Array>,
+    contentType?: string | null,
+  ): Promise<ObjetoGuardado>;
+  /** Caminho local de um objeto já guardado, para leitura em fluxo (só no driver local). */
+  caminhoLocal(chave: string): string;
   guardar(
     chave: string,
     conteudo: string | Uint8Array,
@@ -55,6 +65,34 @@ export function armazenamentoLocal(raiz: string): Armazenamento {
     async ler(chave) {
       validarChave(chave);
       return readFile(path.join(raiz, chave));
+    },
+    async guardarFluxo(chave, fluxo, contentType = null) {
+      validarChave(chave);
+      const destino = path.join(raiz, chave);
+      await mkdir(path.dirname(destino), { recursive: true });
+      const temporario = `${destino}.${process.pid}.tmp`;
+      const hash = createHash('sha256');
+      let tamanhoBytes = 0;
+      const saida = createWriteStream(temporario);
+      try {
+        for await (const pedaco of fluxo) {
+          hash.update(pedaco);
+          tamanhoBytes += pedaco.byteLength;
+          if (!saida.write(pedaco)) await once(saida, 'drain');
+        }
+        saida.end();
+        await once(saida, 'finish');
+      } catch (erro) {
+        saida.destroy();
+        await rm(temporario, { force: true });
+        throw erro;
+      }
+      await rename(temporario, destino);
+      return { chave, sha256: hash.digest('hex'), tamanhoBytes, contentType };
+    },
+    caminhoLocal(chave) {
+      validarChave(chave);
+      return path.join(raiz, chave);
     },
   };
 }

@@ -8,6 +8,11 @@
     "start": "tsx --env-file-if-exists=../../.env src/index.ts",
     "pncp:contratacoes": "tsx --env-file-if-exists=../../.env src/cli/pncp-contratacoes.ts",
     "parlamentares": "tsx --env-file-if-exists=../../.env src/cli/parlamentares.ts",
+    "tse:candidaturas": "tsx --env-file-if-exists=../../.env src/cli/tse-candidaturas.ts",
+    "receita:socios": "tsx --env-file-if-exists=../../.env src/cli/receita-socios.ts",
+    "receita:empresas": "tsx --env-file-if-exists=../../.env src/cli/receita-empresas.ts",
+    "alerj": "tsx --env-file-if-exists=../../.env src/cli/alerj.ts",
+    "imprensa": "tsx --env-file-if-exists=../../.env src/cli/imprensa.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },
@@ -17,9 +22,12 @@
     "@alupa/domain": "workspace:*",
     "@alupa/storage": "workspace:*",
     "bullmq": "^5",
+    "csv-parse": "^6",
+    "fflate": "^0.8",
     "drizzle-orm": "^0.44",
     "ioredis": "^5",
-    "pino": "^9"
+    "pino": "^9",
+    "zod": "^4"
   },
   "devDependencies": {
     "@alupa/config": "workspace:*",

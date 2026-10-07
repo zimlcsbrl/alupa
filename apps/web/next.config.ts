@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'www.camara.leg.br', pathname: '/internet/deputado/**' },
       { protocol: 'https', hostname: 'www.senado.leg.br', pathname: '/senadores/img/**' },
+      {
+        protocol: 'https',
+        hostname: 'www.alerj.rj.gov.br',
+        pathname: '/Uploads/PerfilDeputado/**',
+      },
     ],
   },
   poweredByHeader: false,

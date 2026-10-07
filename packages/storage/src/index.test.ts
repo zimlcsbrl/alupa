@@ -24,3 +24,19 @@ describe('armazenamentoLocal', () => {
     await expect(armazenamento.guardar('a/../../b.json', 'x')).rejects.toThrow();
   });
 });
+
+describe('guardarFluxo', () => {
+  const armazenamento = armazenamentoLocal(raiz);
+
+  it('grava em fluxo com o mesmo hash do conteúdo inteiro', async () => {
+    const partes = ['primeira parte;', 'segunda parte;', 'ação'].map((p) => Buffer.from(p));
+    async function* fluxo() {
+      for (const p of partes) yield p;
+    }
+    const guardado = await armazenamento.guardarFluxo('receita/teste/f.csv', fluxo());
+    const inteiro = Buffer.concat(partes);
+    expect(guardado.sha256).toBe(sha256(inteiro));
+    expect(guardado.tamanhoBytes).toBe(inteiro.byteLength);
+    expect(await armazenamento.ler('receita/teste/f.csv')).toEqual(inteiro);
+  });
+});

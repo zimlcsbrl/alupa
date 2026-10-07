@@ -36,6 +36,41 @@
       "when": 1791335727487,
       "tag": "0004_parlamentares_contatos",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791337176790,
+      "tag": "0005_candidaturas_bens_imprensa",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791338861465,
+      "tag": "0006_cargo_deputado_estadual",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791377987539,
+      "tag": "0007_restrito_documento_pessoa",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791379635140,
+      "tag": "0008_participacao_societaria",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791380095747,
+      "tag": "0009_organizacao_receita",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { apenasDigitos, normalizarCnpj, semAcentos, slugify } from './texto';
+import {
+  apenasDigitos,
+  cnpjDaMatriz,
+  normalizarCnpj,
+  normalizarNome,
+  semAcentos,
+  slugify,
+} from './texto';
 
 describe('slugify', () => {
   it('remove acentos e pontuação', () => {
@@ -36,5 +43,21 @@ describe('normalizarCnpj', () => {
     expect(normalizarCnpj('00.394.460/0058-88')).toBeNull();
     expect(normalizarCnpj('123')).toBeNull();
     expect(normalizarCnpj('11111111111111')).toBeNull();
+  });
+});
+
+describe('normalizarNome', () => {
+  it('iguala grafias da mesma pessoa em fontes diferentes', () => {
+    expect(normalizarNome('Douglas  Ruas da Silva')).toBe('DOUGLAS RUAS DA SILVA');
+    expect(normalizarNome('JOSÉ D’ÁVILA')).toBe('JOSE D AVILA');
+  });
+});
+
+describe('cnpjDaMatriz', () => {
+  it('calcula os dígitos verificadores da matriz', () => {
+    const cnpj = cnpjDaMatriz('83021808');
+    expect(cnpj).toBe('83021808000182'); // CNPJ real do Município de Chapecó (PNCP)
+    expect(normalizarCnpj(cnpj!)).toBe(cnpj);
+    expect(cnpjDaMatriz('123')).toBeNull();
   });
 });
