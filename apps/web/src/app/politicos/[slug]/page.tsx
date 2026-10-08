@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { CopyButton } from '@/components/copy-button';
 import { DraftNotice } from '@/components/draft-notice';
+import { EmpresasLigadasLink } from '@/components/empresas-ligadas-link';
 import { InfoTip } from '@/components/info-tip';
 import { ParticipacoesSocietarias } from '@/components/participacoes-societarias';
 import { PatrimonioDeclarado } from '@/components/patrimonio-declarado';
@@ -151,6 +152,7 @@ export default async function PoliticoPage({ params }: PageProps<'/politicos/[sl
           participacoes={p.participacoes}
           cobertura={p.coberturaContratos}
         />
+        <EmpresasLigadasLink />
       </section>
 
       <section className="data-section" aria-labelledby="imprensa">

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { DraftNotice } from '@/components/draft-notice';
+import { EmpresasLigadasLink } from '@/components/empresas-ligadas-link';
 import { Pagination } from '@/components/pagination';
 import { listarOrgaos } from '@/lib/dados';
 import { emReais, formatarCnpj, lerPagina, lerTexto, numero, PODERES } from '@/lib/formatos';
@@ -38,6 +39,8 @@ export default async function OrgaosPage({ searchParams }: PageProps<'/orgaos'>)
         Por enquanto, a lista reúne apenas órgãos com contratações publicadas no PNCP nos dias já
         coletados. Ausência de um órgão não significa ausência de contratações.
       </DraftNotice>
+
+      <EmpresasLigadasLink />
 
       <form className="filter-bar" role="search" action="/orgaos">
         <label htmlFor="q">Buscar órgão</label>

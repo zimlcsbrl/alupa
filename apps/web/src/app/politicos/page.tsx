@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { DraftNotice } from '@/components/draft-notice';
+import { EmpresasLigadasLink } from '@/components/empresas-ligadas-link';
 import { Pagination } from '@/components/pagination';
 import { buscarCandidatos, listarPoliticos, listarUfs } from '@/lib/dados';
 import { CARGOS, cargoTse, lerPagina, lerTexto } from '@/lib/formatos';
@@ -47,6 +48,8 @@ export default async function PoliticosPage({ searchParams }: PageProps<'/politi
         Janeiro e candidaturas no RJ em 2022, 2024 e 2026. Outros estados entram nas próximas
         etapas.
       </DraftNotice>
+
+      <EmpresasLigadasLink />
 
       <form className="filter-bar" role="search" action="/politicos">
         <label htmlFor="q">Buscar por nome</label>

@@ -1,0 +1,261 @@
+.page :global(.page-heading) {
+  max-width: 960px;
+}
+
+.page :global(.page-heading .lead) {
+  max-width: 780px;
+  font-size: 18px;
+}
+
+.navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.navigation a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 46px;
+  padding: 10px 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.navigation a:hover {
+  border-color: var(--green);
+  background: #e9efe4;
+}
+
+.overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0 0 24px;
+  padding: 28px 32px;
+  border-radius: 16px;
+  background: var(--green);
+  color: var(--surface);
+}
+
+.overview > div + div {
+  padding-left: 28px;
+  border-left: 1px solid #ffffff30;
+}
+
+.overview dt {
+  color: #d7e5da;
+  font-size: 13px;
+}
+
+.overview dd {
+  margin: 6px 0 0;
+  font-size: 36px;
+  font-weight: 750;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.method {
+  margin-top: 20px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.method ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 36px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.page .totals {
+  gap: 16px;
+}
+
+.totals :global(.stat-card) {
+  padding: 28px;
+  border-radius: 12px;
+}
+
+.totals :global(.stat-value) {
+  font-size: clamp(26px, 3.2vw, 40px);
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.page :global(.data-table thead) {
+  background: #e9ede3;
+}
+
+.page :global(.data-table th),
+.page :global(.data-table td) {
+  padding: 16px 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.page :global(.data-table tbody tr:hover) {
+  background: #f1f4ec;
+}
+
+.page :global(.data-table tbody tr:last-child > *) {
+  border-bottom: 0;
+}
+
+.page :global(.table-scroll):focus-visible,
+.contracts summary:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 5px;
+}
+
+.page :global(.company-list) {
+  gap: 20px;
+}
+
+.page :global(.company-list > li) {
+  padding: 28px;
+  border-radius: 14px;
+}
+
+.page :global(.company-heading strong) {
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.people {
+  margin-block: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.people p {
+  margin-bottom: 8px;
+}
+
+.people ul {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.page .contracts {
+  margin: 0;
+  padding: 0;
+  border-radius: 8px;
+}
+
+.contracts summary {
+  padding: 18px 20px;
+  cursor: pointer;
+  color: var(--green);
+}
+
+.contracts summary > span {
+  font-weight: 700;
+}
+
+.contracts summary strong {
+  display: block;
+  margin: 8px 0 0 18px;
+  font-size: 22px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.contracts summary strong span {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.contracts[open] summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.contracts ul {
+  padding: 0 20px;
+  gap: 0;
+}
+
+.contracts li {
+  padding-block: 18px;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+
+.contracts li + li {
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 760px) {
+  .method ul,
+  .page .totals {
+    grid-template-columns: 1fr;
+  }
+
+  .overview {
+    padding: 24px 20px;
+    gap: 14px;
+  }
+
+  .overview > div + div {
+    padding-left: 14px;
+  }
+
+  .overview dd {
+    font-size: 28px;
+  }
+
+  .page :global(.company-list > li),
+  .totals :global(.stat-card),
+  .method {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .overview {
+    grid-template-columns: 1fr;
+  }
+
+  .overview > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .overview > div + div {
+    padding: 14px 0 0;
+    border-left: 0;
+    border-top: 1px solid #ffffff30;
+  }
+
+  .overview dd {
+    margin: 0;
+  }
+
+  .page :global(.draft-notice) {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media print {
+  .contracts::details-content {
+    content-visibility: visible;
+  }
+}

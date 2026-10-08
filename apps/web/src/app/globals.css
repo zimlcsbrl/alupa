@@ -1981,3 +1981,228 @@ h3 {
   margin: 0;
   padding-left: 20px;
 }
+
+/* Em foco: overview, rule selection and reading rhythm. */
+.focus-page .page-heading {
+  max-width: 940px;
+}
+.focus-page .page-heading h1 {
+  max-width: 900px;
+}
+.focus-page .page-heading .lead {
+  font-size: 18px;
+  max-width: 780px;
+}
+.focus-page .page-heading .button {
+  gap: 20px;
+}
+.focus-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr;
+  margin: 0 0 24px;
+  padding: 28px 32px;
+  border-radius: 16px;
+  background: var(--green);
+  color: var(--surface);
+}
+.focus-overview > div {
+  padding-inline: 28px;
+  border-left: 1px solid #ffffff30;
+}
+.focus-overview > div:first-child {
+  padding-left: 0;
+  border: 0;
+}
+.focus-overview dt {
+  font-size: 13px;
+  color: #d7e5da;
+}
+.focus-overview dd {
+  margin: 6px 0 0;
+  font-size: 36px;
+  font-weight: 750;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.focus-overview > div:last-child dd {
+  font-size: 18px;
+  line-height: 1.6;
+}
+.focus-page .signal-warning {
+  margin-block: 20px;
+  padding: 22px 24px;
+  background: #f3eddb;
+}
+.focus-method {
+  border-block: 1px solid var(--line);
+  margin-top: 28px;
+}
+.focus-method summary {
+  padding: 20px 4px;
+  cursor: pointer;
+  color: var(--green);
+  font-weight: 700;
+}
+.focus-method summary:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 5px;
+}
+.focus-method-hint {
+  display: inline-block;
+  margin-left: 20px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+.focus-method-body {
+  padding: 8px 4px 24px;
+  font-size: 15px;
+}
+.focus-page .method-steps {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 40px;
+}
+.focus-page .signal-rules {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+.focus-page .signal-rules a {
+  padding: 22px;
+  gap: 16px;
+  border-radius: 12px;
+}
+.focus-page .signal-rules a:hover {
+  border-color: var(--green);
+  background: #f0f3eb;
+}
+.focus-page .signal-rules a[aria-current='true'] {
+  background: #e9efe4;
+  border-color: var(--green);
+  box-shadow: inset 0 0 0 1px var(--green);
+}
+.focus-page .signal-rules a strong {
+  font-size: 17px;
+  line-height: 1.4;
+}
+.focus-page .focus-rule-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+}
+.focus-page .signal-rules .focus-rule-count {
+  margin-top: auto;
+  color: var(--green);
+  font-size: 28px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.focus-page .focus-rule-count span {
+  font-weight: 400;
+}
+.focus-results .legal-sheet {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 32px;
+  padding: 28px;
+  font-size: 15px;
+}
+.focus-results .filter-bar {
+  padding: 22px 24px;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  background: #e9ede3;
+}
+.focus-signals > li {
+  padding: 26px;
+}
+.focus-signals .signal-evidence {
+  margin-block: 20px;
+  padding-block: 16px;
+}
+.focus-signals .data-note {
+  padding-top: 14px;
+  margin-bottom: 0;
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 760px) {
+  .focus-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 24px;
+    gap: 24px 0;
+  }
+  .focus-overview > div {
+    padding-inline: 20px 0;
+  }
+  .focus-overview > div:last-child {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid #ffffff30;
+    padding: 18px 0 0;
+  }
+  .focus-page .signal-rules {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .focus-page .method-steps,
+  .focus-results .legal-sheet {
+    grid-template-columns: 1fr;
+  }
+  .focus-method-hint {
+    display: block;
+    margin: 4px 0 0 20px;
+  }
+}
+@media (max-width: 480px) {
+  .focus-page .signal-rules {
+    grid-template-columns: 1fr;
+  }
+  .focus-page .signal-rules a,
+  .focus-page .signal-warning,
+  .focus-results .legal-sheet,
+  .focus-results .filter-bar,
+  .focus-signals > li {
+    padding: 18px;
+  }
+  .focus-page .draft-notice {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* ---------- Chamada para o painel de empresas ligadas ---------- */
+.panel-link {
+  margin: 16px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+.panel-callout {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 20px;
+  padding: 20px 22px;
+  border: 1px solid var(--green);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--foreground);
+  text-decoration: none;
+}
+.panel-callout strong {
+  color: var(--green);
+  font-size: 20px;
+}
+.panel-callout > span:not(.eyebrow, .panel-callout-cta) {
+  font-size: 14px;
+  color: var(--muted);
+}
+.panel-callout .panel-callout-cta {
+  color: var(--green);
+  font-weight: 700;
+}
+.panel-callout:hover,
+.panel-callout:focus-visible {
+  background: #f1f4ec;
+}
+.panel-callout:hover .panel-callout-cta {
+  text-decoration: underline;
+}

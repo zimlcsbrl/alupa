@@ -2,9 +2,10 @@ import { REGRAS_SINAIS, regraSinal } from '@alupa/domain';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { DraftNotice } from '@/components/draft-notice';
+import { EmpresasLigadasLink } from '@/components/empresas-ligadas-link';
 import { InfoTip } from '@/components/info-tip';
 import { Pagination } from '@/components/pagination';
-import { listarSinais, resumoSinais } from '@/lib/dados';
+import { listarSinais, painelEmpresasLigadas, resumoSinais } from '@/lib/dados';
 import {
   emReais,
   formatarCnpj,
@@ -68,7 +69,10 @@ function descreverEvidencia(regra: string, e: Evidencia) {
           : `Na candidatura de ${e.ano} (${String(e.cargo).toLowerCase()}), ${numero(Number(e.bensDeclarados))} bens declarados ao TSE, nenhum de cotas ou participação.`,
       ];
     case 'mandato-e-contrato-publico':
-      return [contrato, `${e.qualificacao ?? 'Sócio'} da empresa com mandato vigente na assinatura.`];
+      return [
+        contrato,
+        `${e.qualificacao ?? 'Sócio'} da empresa com mandato vigente na assinatura.`,
+      ];
     case 'contrato-desproporcional-capital':
       return [
         contrato,
@@ -91,7 +95,10 @@ function descreverEvidencia(regra: string, e: Evidencia) {
 
 export default async function EmFocoPage({ searchParams }: PageProps<'/em-foco'>) {
   const params = await searchParams;
-  const { linhas, atualizadoEm } = await resumoSinais();
+  const [{ linhas, atualizadoEm }, painel] = await Promise.all([
+    resumoSinais(),
+    painelEmpresasLigadas(),
+  ]);
 
   const totalPorRegra = new Map<string, number>();
   const totalPorSituacao = new Map<string, number>();
@@ -111,7 +118,7 @@ export default async function EmFocoPage({ searchParams }: PageProps<'/em-foco'>
   const { sinais, haMais } = await listarSinais({ regra: regra.codigo, termo, pagina });
 
   return (
-    <main id="conteudo" className="records-page">
+    <main id="conteudo" className="records-page focus-page">
       <header className="page-heading">
         <Link className="back-link" href="/">
           Início <span aria-hidden="true">/</span>
@@ -125,7 +132,25 @@ export default async function EmFocoPage({ searchParams }: PageProps<'/em-foco'>
           Quando os números de uma regra batem, o caso aparece aqui como sinal: algo que merece ser
           conferido, não uma acusação.
         </p>
+        <a className="button" href="#regras">
+          Explorar os sinais <span aria-hidden="true">↓</span>
+        </a>
       </header>
+
+      <dl className="focus-overview" aria-label="Resumo da base">
+        <div>
+          <dt>Sinais ativos</dt>
+          <dd>{numero(total)}</dd>
+        </div>
+        <div>
+          <dt>Regras públicas</dt>
+          <dd>{numero(REGRAS_SINAIS.length)}</dd>
+        </div>
+        <div>
+          <dt>Último cálculo</dt>
+          <dd>{atualizadoEm ? formatarDataHora(atualizadoEm) : 'Ainda não realizado'}</dd>
+        </div>
+      </dl>
 
       <DraftNotice>
         Por enquanto: pessoas com candidatura no RJ (2022, 2024 e 2026), quadro de sócios da Receita
@@ -136,11 +161,10 @@ export default async function EmFocoPage({ searchParams }: PageProps<'/em-foco'>
         <p className="eyebrow">ANTES DE LER</p>
         <p>
           <strong>Um sinal não representa uma falha, uma irregularidade ou um crime.</strong>{' '}
-          <InfoTip tema="sinais" /> É um
-          achado automático que depende de avaliação: muitas vezes há uma explicação legítima, e
-          listamos as mais comuns em cada regra. Os vínculos entre pessoas e empresas são{' '}
-          <strong>possíveis correspondências</strong> (nome completo e seis dígitos do CPF), não
-          identificações confirmadas. <InfoTip tema="empresas" />
+          <InfoTip tema="sinais" /> É um achado automático que depende de avaliação: muitas vezes há
+          uma explicação legítima, e listamos as mais comuns em cada regra. Os vínculos entre
+          pessoas e empresas são <strong>possíveis correspondências</strong> (nome completo e seis
+          dígitos do CPF), não identificações confirmadas. <InfoTip tema="empresas" />
         </p>
         <p>
           É citado em um sinal? Você pode enviar sua explicação ou apontar um erro para{' '}
@@ -149,69 +173,85 @@ export default async function EmFocoPage({ searchParams }: PageProps<'/em-foco'>
         </p>
       </div>
 
-      <section className="data-section" aria-labelledby="metodologia">
-        <h2 id="metodologia">Como trabalhamos com sinais</h2>
-        <ol className="method-steps">
-          <li>
-            <strong>Regras públicas e objetivas.</strong> Cada regra compara dados de fontes
-            oficiais (TSE, Receita Federal, PNCP) com um limiar fixo. O critério exato está escrito
-            abaixo, para que qualquer pessoa consiga reproduzir o resultado.
-          </li>
-          <li>
-            <strong>As mesmas regras para todos.</strong> Não escolhemos quem é examinado: a regra
-            roda sobre todas as pessoas e empresas da base, de qualquer partido ou cargo.
-          </li>
-          <li>
-            <strong>Sem ranking.</strong> Não somamos sinais nem ordenamos pessoas por quantidade
-            de achados. A lista segue a ordem alfabética, e um nome com mais sinais não é “mais
-            suspeito”.
-          </li>
-          <li>
-            <strong>Todo sinal nasce “não verificado”.</strong> Só depois de conferir documentos e
-            ouvir os envolvidos ele muda de situação. Quando a fonte corrige o dado, o sinal deixa de
-            aparecer automaticamente.
-          </li>
-          <li>
-            <strong>Fonte e explicação lado a lado.</strong> Cada sinal mostra os números que o
-            dispararam, de onde vieram e as explicações legítimas mais frequentes.
-          </li>
-          <li>
-            <strong>Direito de resposta.</strong> Explicações enviadas pelos citados são publicadas
-            junto do sinal.
-          </li>
-        </ol>
+      <EmpresasLigadasLink totais={painel.totais} />
 
-        <dl className="signal-states">
-          {Object.entries(SITUACOES).map(([codigo, s]) => (
-            <div key={codigo}>
-              <dt>
-                <span className={`tag ${codigo === 'nao_verificado' ? 'tag-warning' : ''}`}>
-                  {s.rotulo}
-                </span>
-                {totalPorSituacao.get(codigo) ? (
-                  <span className="table-note">{numero(totalPorSituacao.get(codigo)!)}</span>
-                ) : null}
-              </dt>
-              <dd>{s.descricao}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
+      <details className="focus-method">
+        <summary>
+          <span>Como trabalhamos com sinais</span>
+          <span className="focus-method-hint">Método e etapas de verificação</span>
+        </summary>
+        <div className="focus-method-body">
+          <ol className="method-steps">
+            <li>
+              <strong>Regras públicas e objetivas.</strong> Cada regra compara dados de fontes
+              oficiais (TSE, Receita Federal, PNCP) com um limiar fixo. O critério exato está
+              escrito abaixo, para que qualquer pessoa consiga reproduzir o resultado.
+            </li>
+            <li>
+              <strong>As mesmas regras para todos.</strong> Não escolhemos quem é examinado: a regra
+              roda sobre todas as pessoas e empresas da base, de qualquer partido ou cargo.
+            </li>
+            <li>
+              <strong>Sem ranking.</strong> Não somamos sinais nem ordenamos pessoas por quantidade
+              de achados. A lista segue a ordem alfabética, e um nome com mais sinais não é “mais
+              suspeito”.
+            </li>
+            <li>
+              <strong>Todo sinal nasce “não verificado”.</strong> Só depois de conferir documentos e
+              ouvir os envolvidos ele muda de situação. Quando a fonte corrige o dado, o sinal deixa
+              de aparecer automaticamente.
+            </li>
+            <li>
+              <strong>Fonte e explicação lado a lado.</strong> Cada sinal mostra os números que o
+              dispararam, de onde vieram e as explicações legítimas mais frequentes.
+            </li>
+            <li>
+              <strong>Direito de resposta.</strong> Explicações enviadas pelos citados são
+              publicadas junto do sinal.
+            </li>
+          </ol>
+
+          <dl className="signal-states">
+            {Object.entries(SITUACOES).map(([codigo, s]) => (
+              <div key={codigo}>
+                <dt>
+                  <span className={`tag ${codigo === 'nao_verificado' ? 'tag-warning' : ''}`}>
+                    {s.rotulo}
+                  </span>
+                  {totalPorSituacao.get(codigo) ? (
+                    <span className="table-note">{numero(totalPorSituacao.get(codigo)!)}</span>
+                  ) : null}
+                </dt>
+                <dd>{s.descricao}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </details>
 
       <section className="data-section" aria-labelledby="regras">
-        <h2 id="regras">As regras</h2>
+        <p className="eyebrow">EXPLORE A BASE</p>
+        <h2 id="regras">Escolha uma regra</h2>
         <p className="data-note">
-          {numero(total)} {total === 1 ? 'sinal ativo' : 'sinais ativos'}
-          {atualizadoEm ? `, recalculados em ${formatarDataHora(atualizadoEm)}` : ''}.
+          Selecione um critério para entender o cruzamento e consultar os sinais encontrados.
         </p>
         <ul className="signal-rules">
           {REGRAS_SINAIS.map((r) => {
             const n = totalPorRegra.get(r.codigo) ?? 0;
             return (
-              <li key={r.codigo} aria-current={r.codigo === regra.codigo ? 'true' : undefined}>
-                <Link href={`/em-foco?regra=${r.codigo}#lista`}>
+              <li key={r.codigo}>
+                <Link
+                  href={`/em-foco?regra=${r.codigo}#lista`}
+                  aria-current={r.codigo === regra.codigo ? 'true' : undefined}
+                >
+                  <span className="focus-rule-status">
+                    {r.codigo === regra.codigo ? 'Selecionada' : 'Ver sinais'}
+                    <span aria-hidden="true">{r.codigo === regra.codigo ? '✓' : '↗'}</span>
+                  </span>
                   <strong>{r.titulo}</strong>
-                  <span>{n === 0 ? 'Nenhum sinal na base atual' : `${numero(n)} sinais`}</span>
+                  <span className="focus-rule-count">
+                    {numero(n)} <span>{n === 1 ? 'sinal' : 'sinais'}</span>
+                  </span>
                 </Link>
               </li>
             );
@@ -219,8 +259,8 @@ export default async function EmFocoPage({ searchParams }: PageProps<'/em-foco'>
         </ul>
       </section>
 
-      <section className="data-section" aria-labelledby="lista">
-        <p className="eyebrow">REGRA</p>
+      <section className="data-section focus-results" aria-labelledby="lista">
+        <p className="eyebrow">REGRA SELECIONADA</p>
         <h2 id="lista">{regra.titulo}</h2>
         <dl className="legal-sheet">
           <div>
@@ -251,7 +291,12 @@ export default async function EmFocoPage({ searchParams }: PageProps<'/em-foco'>
           <input type="hidden" name="regra" value={regra.codigo} />
           <label htmlFor="q">Buscar nesta regra</label>
           <div>
-            <input id="q" name="q" defaultValue={termo} placeholder="Nome da pessoa ou da empresa" />
+            <input
+              id="q"
+              name="q"
+              defaultValue={termo}
+              placeholder="Nome da pessoa ou da empresa"
+            />
             <button className="button" type="submit">
               Buscar
             </button>
@@ -272,7 +317,7 @@ export default async function EmFocoPage({ searchParams }: PageProps<'/em-foco'>
                 depois, as que não declararam bem nenhum. Dentro de cada grupo, ordem alfabética.
               </p>
             )}
-            <ul className="company-list">
+            <ul className="company-list focus-signals">
               {sinais.map((s) => {
                 const situacao = SITUACOES[s.situacao] ?? SITUACOES.nao_verificado!;
                 return (

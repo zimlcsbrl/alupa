@@ -11,6 +11,7 @@ import {
   formatarData,
   numero,
 } from '@/lib/formatos';
+import styles from './page.module.css';
 
 export const metadata: Metadata = {
   title: 'Empresas ligadas a políticos com contratos públicos',
@@ -31,7 +32,7 @@ export default async function EmpresasLigadasPage() {
   const periodo = descreverCobertura(cobertura);
 
   return (
-    <main id="conteudo" className="records-page">
+    <main id="conteudo" className={`records-page ${styles.page}`}>
       <header className="page-heading">
         <Link className="back-link" href="/">
           Início <span aria-hidden="true">/</span>
@@ -44,14 +45,42 @@ export default async function EmpresasLigadasPage() {
           Empresas em que políticos e candidatos aparecem como sócios na Receita Federal e que
           receberam contratos publicados no Portal Nacional de Contratações Públicas.
         </p>
+        {totais.contratos > 0 && (
+          <nav className={styles.navigation} aria-label="Explorar empresas ligadas">
+            <a href="#por-politico">
+              Por político <span aria-hidden="true">↓</span>
+            </a>
+            <a href="#por-orgao">
+              Por órgão <span aria-hidden="true">↓</span>
+            </a>
+            <a href="#por-empresa">
+              Empresas e contratos <span aria-hidden="true">↓</span>
+            </a>
+          </nav>
+        )}
       </header>
+
+      <dl className={styles.overview} aria-label="Abrangência da base coletada">
+        <div>
+          <dt>Empresas</dt>
+          <dd>{numero(totais.empresas)}</dd>
+        </div>
+        <div>
+          <dt>Políticos ligados</dt>
+          <dd>{numero(totais.politicos)}</dd>
+        </div>
+        <div>
+          <dt>Órgãos contratantes</dt>
+          <dd>{numero(totais.orgaos)}</dd>
+        </div>
+      </dl>
 
       <DraftNotice>
         Por enquanto: pessoas com candidatura no RJ (2022, 2024 e 2026) e contratos publicados no
         PNCP {periodo ?? 'no período já coletado'}.
       </DraftNotice>
 
-      <div className="method-note">
+      <div className={styles.method} role="note">
         <p className="eyebrow">ANTES DE LER</p>
         <ul>
           <li>
@@ -81,7 +110,7 @@ export default async function EmpresasLigadasPage() {
         </p>
       ) : (
         <>
-          <section className="stat-grid" aria-label="Totais">
+          <section className={`stat-grid ${styles.totals}`} aria-label="Totais">
             <article className="stat-card">
               <p className="eyebrow">Contratos</p>
               <p className="stat-value">{numero(totais.contratos)}</p>
@@ -103,8 +132,13 @@ export default async function EmpresasLigadasPage() {
           </section>
 
           <section className="data-section" aria-labelledby="por-politico">
+            <p className="eyebrow">QUEM ESTÁ LIGADO</p>
             <h2 id="por-politico">Por político</h2>
-            <div className="table-scroll">
+            <p className="data-note">
+              Consulte as empresas e os contratos associados a cada pessoa. Clique no nome para ver
+              seu perfil.
+            </p>
+            <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="por-politico">
               <table className="data-table">
                 <thead>
                   <tr>
@@ -140,8 +174,12 @@ export default async function EmpresasLigadasPage() {
           </section>
 
           <section className="data-section" aria-labelledby="por-orgao">
+            <p className="eyebrow">QUEM CONTRATA</p>
             <h2 id="por-orgao">Por órgão contratante</h2>
-            <div className="table-scroll">
+            <p className="data-note">
+              Veja como os contratos se distribuem entre os órgãos públicos da base.
+            </p>
+            <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="por-orgao">
               <table className="data-table">
                 <thead>
                   <tr>
@@ -171,7 +209,11 @@ export default async function EmpresasLigadasPage() {
           </section>
 
           <section className="data-section" aria-labelledby="por-empresa">
+            <p className="eyebrow">CONSULTE OS DOCUMENTOS</p>
             <h2 id="por-empresa">Empresas e contratos</h2>
+            <p className="data-note">
+              Abra os contratos de cada empresa para consultar datas, valores e documentos no PNCP.
+            </p>
             <ul className="company-list">
               {porEmpresa.map((e) => (
                 <li key={e.cnpj}>
@@ -182,24 +224,28 @@ export default async function EmpresasLigadasPage() {
                     </div>
                     <span className="tag tag-warning">Possível correspondência</span>
                   </div>
-                  <p className="company-people">
-                    Sócios acompanhados:{' '}
-                    {e.politicos.map((p, i) => (
-                      <span key={p.slug}>
-                        {i > 0 && ', '}
-                        <Link href={`/politicos/${p.slug}#empresas`}>{p.nome}</Link> (
-                        {p.qualificacao ?? 'qualificação não informada'}
-                        {p.entradaEm ? `, desde ${formatarData(p.entradaEm)}` : ''})
+                  <div className={styles.people}>
+                    <p className="eyebrow">Sócios acompanhados</p>
+                    <ul>
+                      {e.politicos.map((p) => (
+                        <li key={p.slug}>
+                          <Link href={`/politicos/${p.slug}#empresas`}>{p.nome}</Link> (
+                          {p.qualificacao ?? 'qualificação não informada'}
+                          {p.entradaEm ? `, desde ${formatarData(p.entradaEm)}` : ''})
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <details className={`company-contracts ${styles.contracts}`}>
+                    <summary>
+                      <span>
+                        Ver {numero(e.contratos.length)}{' '}
+                        {e.contratos.length === 1 ? 'contrato' : 'contratos'}
                       </span>
-                    ))}
-                  </p>
-                  <div className="company-contracts">
-                    <p>
                       <strong>
-                        {e.contratos.length} {e.contratos.length === 1 ? 'contrato' : 'contratos'} ·{' '}
-                        {emReais(e.valor)}
+                        {emReais(e.valor)} <span>valor global contratado</span>
                       </strong>
-                    </p>
+                    </summary>
                     <ul>
                       {e.contratos.map((c) => (
                         <li key={c.contratoId}>
@@ -217,7 +263,7 @@ export default async function EmpresasLigadasPage() {
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  </details>
                 </li>
               ))}
             </ul>
