@@ -34,6 +34,7 @@ export const footerNav = [
   { href: '/eleicoes', label: 'Eleições' },
   { href: '/orgaos', label: 'Órgãos' },
   { href: '/empresas-ligadas', label: 'Empresas de políticos' },
+  { href: '/em-foco', label: 'Em foco' },
   { href: '/sobre', label: 'Sobre' },
   { href: '/manifesto', label: 'Manifesto' },
   { href: '/metodologia/amparo-legal', label: 'Amparo legal' },

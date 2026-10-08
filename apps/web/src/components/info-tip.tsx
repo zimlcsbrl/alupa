@@ -1,6 +1,13 @@
 import Link from 'next/link';
 
-export type TemaLegal = 'patrimonio' | 'cpf' | 'empresas' | 'contratos' | 'contatos' | 'imprensa';
+export type TemaLegal =
+  | 'patrimonio'
+  | 'cpf'
+  | 'empresas'
+  | 'contratos'
+  | 'contatos'
+  | 'imprensa'
+  | 'sinais';
 
 const ROTULOS: Record<TemaLegal, string> = {
   patrimonio: 'bens declarados',
@@ -9,6 +16,7 @@ const ROTULOS: Record<TemaLegal, string> = {
   contratos: 'contratos públicos',
   contatos: 'contatos públicos',
   imprensa: 'seleção de imprensa',
+  sinais: 'sinais para verificação',
 };
 
 /**

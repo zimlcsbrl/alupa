@@ -220,6 +220,36 @@ export default function AmparoLegalPage() {
         />
       </section>
 
+      <section id="sinais">
+        <h2>Sinais para verificação (Em foco)</h2>
+        <Ficha
+          fonte={<>Cruzamento das bases acima: TSE, Receita Federal e PNCP.</>}
+          metodo={
+            <>
+              Regras objetivas e publicadas, aplicadas igualmente a todas as pessoas e empresas da
+              base. Cada achado nasce &ldquo;não verificado&rdquo; e só muda de situação após
+              conferência de documentos e escuta dos envolvidos. Não há ranking de pessoas. Veja as
+              regras e os critérios em <Link href="/em-foco">Em foco</Link>.
+            </>
+          }
+          amparo={
+            <>
+              O tratamento de dados públicos para finalidade de interesse público e controle social
+              é admitido pela LGPD (art. 7º, §§ 3º e 7º), observados os princípios de finalidade,
+              necessidade e transparência (art. 6º). A divulgação se apoia na liberdade de informação
+              jornalística (CF, art. 220).
+            </>
+          }
+          limites={
+            <>
+              Um sinal não é acusação nem prova de irregularidade: depende de avaliação e
+              frequentemente tem explicação legítima. Os citados podem enviar explicação ou correção,
+              publicada junto do sinal.
+            </>
+          }
+        />
+      </section>
+
       <section id="contatos">
         <h2>Contatos de políticos e órgãos</h2>
         <Ficha

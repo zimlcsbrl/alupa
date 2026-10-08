@@ -19,6 +19,7 @@ const {
   orgao,
   participacaoSocietaria,
   pessoa,
+  sinal,
 } = schema;
 
 export const POR_PAGINA = 30;
@@ -550,4 +551,68 @@ export async function painelEmpresasLigadas() {
     porEmpresa: ordenar(porEmpresa),
     cobertura: await coberturaContratos(),
   };
+}
+
+// ---------- Sinais (Em foco) ----------
+
+/** Quantos sinais ativos há em cada regra e em que situação editorial. */
+export async function resumoSinais() {
+  const linhas = await db()
+    .select({ regra: sinal.regra, situacao: sinal.situacao, total: count() })
+    .from(sinal)
+    .where(eq(sinal.ativo, true))
+    .groupBy(sinal.regra, sinal.situacao);
+  const [atualizacao] = await db()
+    .select({ em: sql<Date | null>`max(${sinal.atualizadoEm})`.mapWith(sinal.atualizadoEm) })
+    .from(sinal);
+  return { linhas, atualizadoEm: atualizacao?.em ?? null };
+}
+
+/**
+ * Sinais ativos de uma regra. Ordem neutra (nome da pessoa), sem ranking; na regra de
+ * participação, candidaturas que declararam algum bem vêm antes, por serem mais específicas.
+ */
+export async function listarSinais({
+  regra,
+  termo,
+  pagina,
+}: {
+  regra: string;
+  termo: string;
+  pagina: number;
+}) {
+  const linhas = await db()
+    .select({
+      id: sinal.id,
+      evidencia: sinal.evidencia,
+      valorReferencia: sinal.valorReferencia,
+      situacao: sinal.situacao,
+      notaEditorial: sinal.notaEditorial,
+      detectadoEm: sinal.detectadoEm,
+      pessoaNome: pessoa.nome,
+      pessoaSlug: pessoa.slug,
+      empresaNome: organizacao.razaoSocial,
+      empresaCnpj: organizacao.cnpj,
+    })
+    .from(sinal)
+    .leftJoin(pessoa, eq(pessoa.id, sinal.pessoaId))
+    .leftJoin(organizacao, eq(organizacao.id, sinal.organizacaoId))
+    .where(
+      and(
+        eq(sinal.regra, regra),
+        eq(sinal.ativo, true),
+        termo
+          ? sql`(${contem(pessoa.nome, termo)} OR ${contem(organizacao.razaoSocial, termo)})`
+          : undefined,
+      ),
+    )
+    .orderBy(
+      sql`coalesce((${sinal.evidencia}->>'nenhumBemDeclarado')::boolean, false)`,
+      asc(pessoa.nome),
+      asc(organizacao.razaoSocial),
+      asc(sinal.chave),
+    )
+    .limit(POR_PAGINA + 1)
+    .offset((pagina - 1) * POR_PAGINA);
+  return { sinais: linhas.slice(0, POR_PAGINA), haMais: linhas.length > POR_PAGINA };
 }

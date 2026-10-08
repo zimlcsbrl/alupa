@@ -227,7 +227,8 @@ export default async function EmpresasLigadasPage() {
 
       <p className="data-note">
         Fontes: TSE (candidaturas e CPF), Receita Federal (quadro de sócios e cadastro de empresas)
-        e PNCP (contratos). <Link href="/metodologia/amparo-legal">Amparo legal e método</Link>.
+        e PNCP (contratos). <Link href="/metodologia/amparo-legal">Amparo legal e método</Link> ·{' '}
+        <Link href="/em-foco">Sinais para verificação</Link>.
       </p>
     </main>
   );

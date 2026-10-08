@@ -1888,3 +1888,96 @@ h3 {
   font-size: 14px;
   margin: 12px 0;
 }
+
+/* ---------- Em foco (sinais) ---------- */
+.signal-warning {
+  margin-top: 20px;
+  padding: 18px 20px;
+  border-left: 4px solid #c9a227;
+  border-radius: 8px;
+  background: #faf3da;
+  font-size: 15px;
+}
+.signal-warning p {
+  margin: 0 0 10px;
+}
+.signal-warning p:last-child {
+  margin-bottom: 0;
+}
+.method-steps {
+  margin: 0 0 20px;
+  padding-left: 22px;
+  display: grid;
+  gap: 10px;
+}
+.signal-states {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+.signal-states > div {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.signal-states dt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.signal-states dd {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.signal-rules {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+.signal-rules a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  text-decoration: none;
+  color: var(--foreground);
+}
+.signal-rules a strong {
+  color: var(--green);
+}
+.signal-rules a span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.signal-rules a:hover strong {
+  text-decoration: underline;
+}
+.signal-rules li[aria-current='true'] a {
+  border-color: var(--green);
+  box-shadow: inset 0 0 0 1px var(--green);
+}
+.signal-evidence {
+  margin: 12px 0;
+  padding: 12px 14px 12px 30px;
+  border-radius: 6px;
+  background: #f1f4ec;
+  font-size: 14px;
+}
+.signal-evidence li + li {
+  margin-top: 4px;
+}
+.legal-sheet dd ul {
+  margin: 0;
+  padding-left: 20px;
+}

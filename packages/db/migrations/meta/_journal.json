@@ -78,6 +78,13 @@
       "when": 1791408395037,
       "tag": "0010_contratos",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791417785015,
+      "tag": "0011_sinais",
+      "breakpoints": true
     }
   ]
 }

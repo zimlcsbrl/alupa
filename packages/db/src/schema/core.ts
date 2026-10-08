@@ -7,6 +7,7 @@ import {
   date,
   index,
   integer,
+  jsonb,
   numeric,
   pgSchema,
   text,
@@ -515,4 +516,47 @@ export const contrato = core.table(
     atualizadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index().on(t.fornecedorCnpj), index().on(t.fornecedorId), index().on(t.orgaoCnpj)],
+);
+
+export const situacaoSinal = core.enum('situacao_sinal', [
+  'nao_verificado',
+  'em_verificacao',
+  'explicado',
+  'descartado',
+  'virou_caso',
+]);
+
+/**
+ * Sinal para verificação: um achado gerado por uma regra objetiva sobre os dados.
+ * Não é conclusão nem acusação; depende de avaliação humana.
+ */
+export const sinal = core.table(
+  'sinal',
+  {
+    id: uuid()
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    /** Código da regra, ex.: "participacao-nao-declarada". */
+    regra: text().notNull(),
+    /** Identifica o achado dentro da regra, para atualizar sem duplicar. */
+    chave: text().notNull(),
+    pessoaId: uuid().references(() => pessoa.id),
+    organizacaoId: uuid().references(() => organizacao.id),
+    contratoId: uuid().references(() => contrato.id),
+    /** Números e datas que dispararam a regra, como foram lidos das fontes. */
+    evidencia: jsonb().notNull(),
+    /** Valor em reais usado para ordenar dentro da regra (ex.: valor do contrato). */
+    valorReferencia: reais(),
+    situacao: situacaoSinal().notNull().default('nao_verificado'),
+    notaEditorial: text(),
+    /** False quando a última execução não encontrou mais o achado (ex.: dado corrigido na fonte). */
+    ativo: boolean().notNull().default(true),
+    detectadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    atualizadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique('sinal_unico').on(t.regra, t.chave),
+    index().on(t.regra, t.ativo),
+    index().on(t.pessoaId),
+  ],
 );
