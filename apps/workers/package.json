@@ -12,6 +12,7 @@
     "tse:candidaturas": "tsx --env-file-if-exists=../../.env src/cli/tse-candidaturas.ts",
     "receita:socios": "tsx --env-file-if-exists=../../.env src/cli/receita-socios.ts",
     "receita:empresas": "tsx --env-file-if-exists=../../.env src/cli/receita-empresas.ts",
+    "emendas:rj": "tsx --env-file-if-exists=../../.env src/cli/emendas-rj.ts",
     "sinais": "tsx --env-file-if-exists=../../.env src/cli/sinais.ts",
     "alerj": "tsx --env-file-if-exists=../../.env src/cli/alerj.ts",
     "imprensa": "tsx --env-file-if-exists=../../.env src/cli/imprensa.ts",

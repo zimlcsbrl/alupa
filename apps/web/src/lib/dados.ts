@@ -11,6 +11,7 @@ const {
   contatoPublico,
   contratacao,
   contrato,
+  emenda,
   enteFederativo,
   mandato,
   materiaImprensa,
@@ -299,10 +300,38 @@ export async function buscarPolitico(slug: string) {
         .orderBy(desc(contrato.assinadoEm))
     : [];
 
+  // Emendas impositivas estaduais (RJ) de que a pessoa é autora.
+  const emendas = await db()
+    .select({
+      id: emenda.id,
+      ano: emenda.ano,
+      codigo: emenda.codigo,
+      numero: emenda.numero,
+      valor: emenda.valor,
+      unidadeOrcamentaria: emenda.unidadeOrcamentaria,
+      funcao: emenda.funcao,
+      objeto: emenda.objeto,
+      beneficiario: emenda.beneficiario,
+      beneficiarioCnpj: emenda.beneficiarioCnpj,
+      municipio: emenda.municipio,
+      modalidade: emenda.modalidade,
+      processoSei: emenda.processoSei,
+      empenhado: emenda.empenhado,
+      liquidado: emenda.liquidado,
+      pago: emenda.pago,
+      posicaoExecucao: emenda.posicaoExecucao,
+      fonteUrl: emenda.fonteUrl,
+      autorNome: emenda.autorNome,
+    })
+    .from(emenda)
+    .where(eq(emenda.pessoaId, p.id))
+    .orderBy(desc(emenda.ano), desc(emenda.valor));
+
   return {
     ...p,
     mandatos,
     contatos,
+    emendas,
     participacoes: participacoes.map((x) => ({
       ...x,
       contratos: contratos.filter((c) => c.fornecedorCnpj === x.empresa?.cnpj),

@@ -24,7 +24,7 @@ export async function generateMetadata({
   return {
     title: `${r.c.modalidadeNome ?? 'Contratação'} ${r.c.numero ?? ''}/${r.c.ano} · ${r.orgaoNome}`,
     description: r.c.objeto?.slice(0, 160) ?? undefined,
-    robots: { index: false, follow: true },
+    alternates: { canonical: `/contratacoes/${r.c.id}` },
   };
 }
 

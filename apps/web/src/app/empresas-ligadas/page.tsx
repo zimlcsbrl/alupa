@@ -18,7 +18,6 @@ export const metadata: Metadata = {
   description:
     'Empresas em que políticos e candidatos aparecem como sócios e que receberam contratos publicados no PNCP, com totais por político e por órgão contratante.',
   alternates: { canonical: '/empresas-ligadas' },
-  robots: { index: false, follow: true },
 };
 
 // Lê o banco a cada acesso: o build não depende de conexão com o banco.

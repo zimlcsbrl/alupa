@@ -67,7 +67,9 @@ Perfis de políticos e entidades conectam registros e contatos institucionais ve
 
 ## Sitemap técnico
 
-`apps/web/src/app/sitemap.ts` gera `/sitemap.xml` somente com `/` e `/manifesto`. Incluir novas páginas apenas quando retornarem conteúdo público real. O domínio central está em `src/lib/site.ts`.
+Atualizado em 09/10/2026: `/sitemap.xml` é um índice, gerado por `apps/web/src/app/sitemap.xml/route.ts`. Ele aponta para `/sitemaps/paginas/0.xml` (páginas fixas e anos eleitorais com dados) e para arquivos de políticos, órgãos e contratações, em lotes de até 10 mil URLs consultadas no banco. O domínio central está em `src/lib/site.ts`.
+
+As páginas públicas estão liberadas para indexação em produção (`ALUPA_INDEXAR=true` no build). Buscas, filtros e paginação continuam com `noindex`; homologação continua bloqueada pelo layout e pelo robots.txt. Não é necessário alterar o endereço cadastrado no Search Console. As respostas XML têm cache público de uma hora; erros de banco não são convertidos em sitemaps vazios. O build não exige conexão com o banco para gerar esses arquivos.
 
 - Exportar URLs canônicas, estáveis e públicas. Redirecionar slugs alterados.
 - Busca e combinações de filtros ficam fora do sitemap; definir `noindex` nas páginas de resultados quando forem implementadas. Coleções editoriais úteis podem ter páginas indexáveis próprias.

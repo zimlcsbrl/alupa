@@ -1,3 +1,4 @@
+import { robotsDaListagem } from '@/lib/indexacao';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -7,13 +8,17 @@ import { Pagination } from '@/components/pagination';
 import { buscarCandidatos, listarPoliticos, listarUfs } from '@/lib/dados';
 import { CARGOS, cargoTse, lerPagina, lerTexto } from '@/lib/formatos';
 
-export const metadata: Metadata = {
-  title: 'Políticos',
-  description:
-    'Deputados federais, senadores e deputados estaduais do RJ, com mandatos, patrimônio declarado e contatos públicos.',
-  alternates: { canonical: '/politicos' },
-  robots: { index: false, follow: true },
-};
+export async function generateMetadata({
+  searchParams,
+}: PageProps<'/politicos'>): Promise<Metadata> {
+  return {
+    title: 'Políticos',
+    description:
+      'Deputados federais, senadores e deputados estaduais do RJ, com mandatos, patrimônio declarado e contatos públicos.',
+    alternates: { canonical: '/politicos' },
+    robots: robotsDaListagem(await searchParams),
+  };
+}
 
 export default async function PoliticosPage({ searchParams }: PageProps<'/politicos'>) {
   const params = await searchParams;

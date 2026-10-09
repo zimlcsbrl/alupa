@@ -32,6 +32,11 @@ const fontes = [
     urlDocumentacao: 'https://dadosabertos.tse.jus.br',
   },
   {
+    codigo: 'emendas-rj',
+    nome: 'Governo do RJ — Emendas Parlamentares Impositivas (RedePlan/SEPLAG)',
+    urlDocumentacao: 'https://www.redeplan.planejamento.rj.gov.br/demaisprocessos/emendas.html',
+  },
+  {
     codigo: 'ibge-localidades',
     nome: 'IBGE — API de Localidades',
     urlDocumentacao: 'https://servicodados.ibge.gov.br/api/docs/localidades',

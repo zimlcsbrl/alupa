@@ -52,6 +52,11 @@ export const publishedRoutes = [
   '/metodologia/amparo-legal',
   '/privacidade',
   '/termos',
+  '/politicos',
+  '/orgaos',
+  '/eleicoes',
+  '/empresas-ligadas',
+  '/em-foco',
 ];
 
 /** Metadados padrão de uma página institucional, com título, canonical e compartilhamento. */

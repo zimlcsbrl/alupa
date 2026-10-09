@@ -1,6 +1,7 @@
 export { baixar, buscar, buscarJson, validarJson, ErroFonte, type RespostaBruta } from './http';
 export * as alerj from './alerj';
 export * as camara from './camara';
+export * as emendasRj from './emendas-rj';
 export * as ibge from './ibge';
 export * as pncp from './pncp';
 export * as receita from './receita';

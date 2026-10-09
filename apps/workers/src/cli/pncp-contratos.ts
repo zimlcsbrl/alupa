@@ -11,14 +11,22 @@ import { parseArgs } from 'node:util';
 import { createDb } from '@alupa/db';
 import { armazenamentoDoAmbiente } from '@alupa/storage';
 import pino from 'pino';
-import { carregarAlvos, coletarContratosDia } from '../pncp/contratos';
+import { carregarAlvos, coletarContratosDia, diasConcluidos } from '../pncp/contratos';
 
 const log = pino({
   level: process.env.LOG_LEVEL ?? 'info',
   transport: process.env.NODE_ENV === 'production' ? undefined : { target: 'pino-pretty' },
 });
 
-const { values } = parseArgs({ options: { de: { type: 'string' }, ate: { type: 'string' } } });
+const { values } = parseArgs({
+  options: {
+    de: { type: 'string' },
+    ate: { type: 'string' },
+    // Pula dias já concluídos, para retomar coletas longas. Não use depois de importar novos
+    // sócios: os dias antigos precisam ser relidos para achar os contratos das novas empresas.
+    retomar: { type: 'boolean', default: false },
+  },
+});
 const DIA = /^\d{4}-\d{2}-\d{2}$/;
 if (
   !values.de ||
@@ -48,11 +56,13 @@ let gravados = 0;
 let falhas = 0;
 try {
   const alvos = await carregarAlvos(db);
+  const concluidos = values.retomar ? await diasConcluidos(db) : new Set<string>();
   log.info(
-    { fornecedoresAcompanhados: alvos.size, dias: dias.length },
+    { fornecedoresAcompanhados: alvos.size, dias: dias.length, jaConcluidos: concluidos.size },
     'início da coleta seletiva',
   );
   for (const dia of dias) {
+    if (concluidos.has(dia)) continue;
     try {
       const r = await coletarContratosDia(db, armazenamento, alvos, dia, log);
       lidos += r.lidos;

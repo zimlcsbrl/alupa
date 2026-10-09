@@ -220,6 +220,42 @@ export default function AmparoLegalPage() {
         />
       </section>
 
+      <section id="emendas">
+        <h2>Emendas parlamentares</h2>
+        <Ficha
+          fonte={
+            <>
+              Emendas impositivas ao orçamento do Estado do RJ: planilhas de detalhamento, processos
+              SEI e relatórios de execução publicados pela Secretaria de Estado de Planejamento
+              (RedePlan).
+            </>
+          }
+          metodo={
+            <>
+              Guardamos cada planilha original. O autor aparece pelo nome parlamentar; ligamos ao
+              perfil pelo nome de urna entre os candidatos a deputado estadual no RJ em 2022, com
+              revisão manual dos casos ambíguos. Mostramos as etapas separadas: valor destinado,
+              empenhado e pago.
+            </>
+          }
+          amparo={
+            <>
+              As emendas impositivas foram instituídas pela Emenda Constitucional estadual nº
+              97/2023 e regulamentadas pelas Leis Complementares nº 219/2024 e nº 221/2024. As
+              planilhas são publicadas pelo próprio governo estadual, e a LAI (art. 8º, § 1º, II e
+              III) exige a divulgação de repasses e despesas.
+            </>
+          }
+          limites={
+            <>
+              Para 2024, a execução foi publicada sem identificar cada emenda; por isso mostramos só
+              o valor destinado. Emenda destinada não significa dinheiro pago, e indicar uma emenda é
+              prerrogativa do mandato, não irregularidade.
+            </>
+          }
+        />
+      </section>
+
       <section id="sinais">
         <h2>Sinais para verificação (Em foco)</h2>
         <Ficha

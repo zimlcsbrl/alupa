@@ -2206,3 +2206,129 @@ h3 {
 .panel-callout:hover .panel-callout-cta {
   text-decoration: underline;
 }
+/* ---------- Emendas parlamentares ---------- */
+.amendments {
+  display: grid;
+  gap: 12px;
+}
+.amendment-year {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.amendment-year > summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding: 16px 20px;
+  cursor: pointer;
+  list-style-position: inside;
+}
+.amendment-year-title {
+  font-weight: 700;
+  color: var(--green);
+  font-size: 17px;
+}
+.amendment-year-total {
+  font-size: 14px;
+  color: var(--muted);
+}
+.amendment-year[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+.amendment-year > :not(summary) {
+  margin-inline: 20px;
+}
+.money-stages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-block: 16px;
+}
+.money-stages > div {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #f1f4ec;
+}
+.money-stages dt {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.money-stages dd {
+  margin: 4px 0 0;
+  font-weight: 700;
+  font-size: 16px;
+}
+.money-stages dd span {
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--muted);
+}
+.money-stages .data-note {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.amendment-list {
+  list-style: none;
+  padding: 0;
+  margin-block: 8px 16px;
+}
+.amendment-list li {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.amendment-list li:last-child {
+  border-bottom: 0;
+}
+.amendment-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+.amendment-heading strong {
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+.amendment-value {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.amendment-meta {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.amendment-progress {
+  position: relative;
+  height: 6px;
+  margin: 10px 0 6px;
+  border-radius: 3px;
+  background: #e4e7de;
+  overflow: hidden;
+}
+.amendment-progress span {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  border-radius: 3px;
+}
+.amendment-progress-committed {
+  background: #b9c9a8;
+}
+.amendment-progress-paid {
+  background: var(--green);
+}
+@media (max-width: 760px) {
+  .money-stages {
+    grid-template-columns: 1fr;
+  }
+  .amendment-heading {
+    flex-direction: column;
+    gap: 4px;
+  }
+}

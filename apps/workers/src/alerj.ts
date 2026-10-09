@@ -15,7 +15,7 @@ const PAUSA_MS = 400;
 const pausa = () => new Promise((r) => setTimeout(r, PAUSA_MS));
 
 /** Comparação de nomes sem acentos, pontuação ou espaços duplicados. */
-const normalizar = (nome: string) =>
+export const normalizar = (nome: string) =>
   semAcentos(nome)
     .toUpperCase()
     .replace(/[^A-Z0-9 ]/g, ' ')
@@ -254,7 +254,7 @@ const vinculoSchema = z.object({
 });
 
 /** Vínculos manuais confirmados para uma fonte: id na fonte → id da pessoa. */
-async function carregarVinculosManuais(db: Database, fonte: string, log: Logger) {
+export async function carregarVinculosManuais(db: Database, fonte: string, log: Logger) {
   const mapa = new Map<string, string>();
   let bruto: unknown;
   try {

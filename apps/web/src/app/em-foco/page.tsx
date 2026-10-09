@@ -1,3 +1,4 @@
+import { robotsDaListagem } from '@/lib/indexacao';
 import { REGRAS_SINAIS, regraSinal } from '@alupa/domain';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -17,13 +18,15 @@ import {
 } from '@/lib/formatos';
 import { contactEmail } from '@/lib/site';
 
-export const metadata: Metadata = {
-  title: 'Em foco: sinais para verificação',
-  description:
-    'Achados automáticos que cruzam candidaturas, empresas e contratos públicos. Cada sinal depende de avaliação e não representa, por si só, uma irregularidade.',
-  alternates: { canonical: '/em-foco' },
-  robots: { index: false, follow: true },
-};
+export async function generateMetadata({ searchParams }: PageProps<'/em-foco'>): Promise<Metadata> {
+  return {
+    title: 'Em foco: sinais para verificação',
+    description:
+      'Achados automáticos que cruzam candidaturas, empresas e contratos públicos. Cada sinal depende de avaliação e não representa, por si só, uma irregularidade.',
+    alternates: { canonical: '/em-foco' },
+    robots: robotsDaListagem(await searchParams),
+  };
+}
 
 // Lê o banco a cada acesso: o build não depende de conexão com o banco.
 export const dynamic = 'force-dynamic';

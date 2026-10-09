@@ -9,7 +9,6 @@ export const metadata: Metadata = {
   description:
     'Candidaturas, resultados e patrimônio declarado nas eleições de 2022, 2024 e 2026, ligados ao histórico de cada político.',
   alternates: { canonical: '/eleicoes' },
-  robots: { index: false, follow: true },
 };
 
 // Lê o banco a cada acesso: o build não depende de conexão com o banco.

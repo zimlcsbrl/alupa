@@ -4,7 +4,7 @@ import { schema } from '@alupa/db';
 import { apenasDigitos } from '@alupa/domain';
 import { type Armazenamento, sha256 } from '@alupa/storage';
 import { gzipSync } from 'node:zlib';
-import { eq, isNotNull, sql } from 'drizzle-orm';
+import { and, eq, isNotNull, sql } from 'drizzle-orm';
 import type { Logger } from 'pino';
 
 const { checkpoint, coleta, contrato, documentoOriginal, fonte, participacaoSocietaria } = schema;
@@ -23,6 +23,17 @@ export async function carregarAlvos(db: Database) {
     .from(participacaoSocietaria)
     .where(isNotNull(participacaoSocietaria.organizacaoId));
   return new Map(linhas.map((l) => [l.cnpjBasico, l.organizacaoId!]));
+}
+
+/** Dias cuja coleta seletiva terminou sem erro. */
+export async function diasConcluidos(db: Database) {
+  const linhas = await db
+    .selectDistinct({ dia: sql<string>`${coleta.parametros}->>'dia'` })
+    .from(coleta)
+    .where(
+      and(eq(coleta.tarefa, 'pncp:contratos:publicacao'), eq(coleta.situacao, 'concluida')),
+    );
+  return new Set(linhas.map((l) => l.dia));
 }
 
 /**

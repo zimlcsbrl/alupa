@@ -518,6 +518,79 @@ export const contrato = core.table(
   (t) => [index().on(t.fornecedorCnpj), index().on(t.fornecedorId), index().on(t.orgaoCnpj)],
 );
 
+/**
+ * Emenda parlamentar ao orçamento. Por ora, emendas impositivas estaduais do RJ (RedePlan).
+ * O autor vem como nome parlamentar; a ligação com a pessoa é feita pelo nome de urna.
+ */
+export const emenda = core.table(
+  'emenda',
+  {
+    id: uuid()
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    /** Ente cujo orçamento recebe a emenda (ex.: Estado do RJ). */
+    enteId: uuid()
+      .notNull()
+      .references(() => enteFederativo.id),
+    ano: integer().notNull(),
+    /** Identificador na fonte; quando a fonte não publica, "<ano>-<número>". */
+    codigo: text().notNull(),
+    numero: text(),
+    tipo: text().notNull(),
+    autorNome: text().notNull(),
+    pessoaId: uuid().references(() => pessoa.id),
+    /** Valor aprovado da emenda (etapa "destinado"). */
+    valor: reais().notNull(),
+    unidadeOrcamentaria: text(),
+    acao: text(),
+    funcao: text(),
+    subfuncao: text(),
+    objeto: text(),
+    justificativa: text(),
+    beneficiario: text(),
+    municipio: text(),
+    beneficiarioCnpj: text(),
+    modalidade: text(),
+    processoSei: text(),
+    /** Execução acumulada (soma das notas de empenho) e posição do relatório. */
+    empenhado: reais(),
+    liquidado: reais(),
+    pago: reais(),
+    posicaoExecucao: text(),
+    fonteUrl: text().notNull(),
+    documentoOriginalId: uuid().references(() => documentoOriginal.id),
+    criadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    atualizadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique('emenda_unica').on(t.enteId, t.ano, t.codigo),
+    index().on(t.pessoaId),
+    index().on(t.beneficiarioCnpj),
+  ],
+);
+
+/** Nota de empenho de uma emenda, com liquidado e pago, como publicada no relatório. */
+export const emendaEmpenho = core.table(
+  'emenda_empenho',
+  {
+    id: uuid()
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    emendaId: uuid()
+      .notNull()
+      .references(() => emenda.id, { onDelete: 'cascade' }),
+    numeroEmpenho: text().notNull(),
+    descricao: text(),
+    empenhado: reais().notNull(),
+    liquidado: reais().notNull(),
+    pago: reais().notNull(),
+    posicao: text(),
+    documentoOriginalId: uuid().references(() => documentoOriginal.id),
+    atualizadoEm: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique('emenda_empenho_unico').on(t.emendaId, t.numeroEmpenho)],
+);
+
 export const situacaoSinal = core.enum('situacao_sinal', [
   'nao_verificado',
   'em_verificacao',

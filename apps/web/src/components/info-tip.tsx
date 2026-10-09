@@ -7,6 +7,7 @@ export type TemaLegal =
   | 'contratos'
   | 'contatos'
   | 'imprensa'
+  | 'emendas'
   | 'sinais';
 
 const ROTULOS: Record<TemaLegal, string> = {
@@ -16,6 +17,7 @@ const ROTULOS: Record<TemaLegal, string> = {
   contratos: 'contratos públicos',
   contatos: 'contatos públicos',
   imprensa: 'seleção de imprensa',
+  emendas: 'emendas parlamentares',
   sinais: 'sinais para verificação',
 };
 

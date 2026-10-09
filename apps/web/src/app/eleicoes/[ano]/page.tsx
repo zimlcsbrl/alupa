@@ -1,3 +1,4 @@
+import { robotsDaListagem } from '@/lib/indexacao';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -16,6 +17,7 @@ const anoValido = (v: string) => ANOS_ELEICAO.find((a) => String(a) === v);
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: PageProps<'/eleicoes/[ano]'>): Promise<Metadata> {
   const ano = anoValido((await params).ano);
   return {
@@ -23,7 +25,8 @@ export async function generateMetadata({
     description: ano
       ? `Candidaturas de ${ano} com resultado, partido e patrimônio declarado ao TSE.`
       : undefined,
-    robots: { index: false, follow: true },
+    alternates: ano ? { canonical: `/eleicoes/${ano}` } : undefined,
+    robots: robotsDaListagem(await searchParams),
   };
 }
 

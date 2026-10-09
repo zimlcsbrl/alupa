@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { CopyButton } from '@/components/copy-button';
 import { DraftNotice } from '@/components/draft-notice';
+import { EmendasParlamentares } from '@/components/emendas-parlamentares';
 import { EmpresasLigadasLink } from '@/components/empresas-ligadas-link';
 import { InfoTip } from '@/components/info-tip';
 import { ParticipacoesSocietarias } from '@/components/participacoes-societarias';
@@ -31,7 +32,6 @@ export async function generateMetadata({
         ? `${cargoTse(candidatura.cargo)} em ${candidatura.ano}: candidaturas e patrimônio declarado ao TSE.`
         : `Perfil de ${p.nome} na A Lupa.`,
     alternates: { canonical: `/politicos/${p.slug}` },
-    robots: { index: false, follow: true },
   };
 }
 
@@ -90,8 +90,9 @@ export default async function PoliticoPage({ params }: PageProps<'/politicos/[sl
       </header>
 
       <DraftNotice>
-        Perfil em construção: mandatos, candidaturas com patrimônio declarado, contatos oficiais e
-        imprensa. Emendas, despesas e votações entram nas próximas etapas, sempre com fonte.
+        Perfil em construção: mandatos, candidaturas com patrimônio declarado, empresas, emendas
+        estaduais do RJ, contatos oficiais e imprensa. Emendas federais, despesas e votações entram
+        nas próximas etapas, sempre com fonte.
       </DraftNotice>
 
       {emDisputa && (
@@ -153,6 +154,13 @@ export default async function PoliticoPage({ params }: PageProps<'/politicos/[sl
           cobertura={p.coberturaContratos}
         />
         <EmpresasLigadasLink />
+      </section>
+
+      <section className="data-section" aria-labelledby="emendas">
+        <h2 id="emendas">
+          Emendas parlamentares <InfoTip tema="emendas" />
+        </h2>
+        <EmendasParlamentares emendas={p.emendas} />
       </section>
 
       <section className="data-section" aria-labelledby="imprensa">

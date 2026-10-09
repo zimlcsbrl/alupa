@@ -1,3 +1,4 @@
+import { robotsDaListagem } from '@/lib/indexacao';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { DraftNotice } from '@/components/draft-notice';
@@ -6,12 +7,14 @@ import { Pagination } from '@/components/pagination';
 import { listarOrgaos } from '@/lib/dados';
 import { emReais, formatarCnpj, lerPagina, lerTexto, numero, PODERES } from '@/lib/formatos';
 
-export const metadata: Metadata = {
-  title: 'Órgãos públicos',
-  description: 'Órgãos e entidades públicas com contratações publicadas no PNCP.',
-  alternates: { canonical: '/orgaos' },
-  robots: { index: false, follow: true },
-};
+export async function generateMetadata({ searchParams }: PageProps<'/orgaos'>): Promise<Metadata> {
+  return {
+    title: 'Órgãos públicos',
+    description: 'Órgãos e entidades públicas com contratações publicadas no PNCP.',
+    alternates: { canonical: '/orgaos' },
+    robots: robotsDaListagem(await searchParams),
+  };
+}
 
 export default async function OrgaosPage({ searchParams }: PageProps<'/orgaos'>) {
   const params = await searchParams;

@@ -25,7 +25,6 @@ export async function generateMetadata({ params }: PageProps<'/orgaos/[slug]'>):
     title: orgao.nome,
     description: `Contratações publicadas no PNCP por ${orgao.nome}, com valores, datas e fontes.`,
     alternates: { canonical: `/orgaos/${orgao.slug}` },
-    robots: { index: false, follow: true },
   };
 }
 
